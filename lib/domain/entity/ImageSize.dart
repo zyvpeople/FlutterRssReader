@@ -1,0 +1,1 @@
+enum ImageSize { original, thumbnail }
