@@ -10,6 +10,6 @@ class Logger {
   void d(Object caller, String message) =>
       _logWriter.write(_logFormatter.formatD(caller, message));
 
-  void e(Object caller, String message, Exception exception) =>
-      _logWriter.write(_logFormatter.formatE(caller, message, exception));
+  void e(Object caller, String message, Object error) =>
+      _logWriter.write(_logFormatter.formatE(caller, message, error));
 }

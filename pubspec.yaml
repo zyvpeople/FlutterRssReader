@@ -25,6 +25,9 @@ dependencies:
   cupertino_icons: ^0.1.2
   xml: 3.4.1
   intl: 0.15.8
+  bloc: ^0.13.0
+  flutter_bloc: ^0.13.0
+  webview_flutter: 0.3.7+1
 
 dev_dependencies:
   flutter_test:

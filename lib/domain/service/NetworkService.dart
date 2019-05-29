@@ -2,7 +2,7 @@ import 'dart:async';
 
 class NetworkService {
 
-  var _isOnline = false;
+  var _isOnline = true;
   final StreamController _onlineStatusChanged = StreamController.broadcast();
 
   bool get isOnline => _isOnline;

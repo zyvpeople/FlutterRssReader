@@ -14,7 +14,7 @@ class FeedService {
   final NetworkService _networkService;
   final Logger _logger;
   final _syncStatusChanged = StreamController.broadcast();
-  final _syncException = StreamController.broadcast();
+  final StreamController<Object> _syncException = StreamController.broadcast();
   var _isSync = false;
   final _subscriptions = <StreamSubscription>[];
 
@@ -24,7 +24,7 @@ class FeedService {
 
   Stream get syncStatusChanged => _syncStatusChanged.stream;
 
-  Stream<Exception> get syncException => _syncException.stream;
+  Stream<Object> get syncException => _syncException.stream;
 
   bool get isSync => _isSync;
 
@@ -60,13 +60,13 @@ class FeedService {
     _setIsSyncAndNotify(false);
   }
 
-  void _onErrorSyncAll(Exception error) {
+  void _onErrorSyncAll(Object error) async {
     _logger.e(this, "Error syncAll", error);
     _setIsSyncAndNotify(false);
     _syncException.sink.add(error);
   }
 
-  void syncFeed(String id) {
+  void syncFeed(int id) {
     if (!_canSync()) {
       return;
     }
@@ -81,7 +81,7 @@ class FeedService {
   Future _syncFeed(Feed feed) async {
     final feedAndFeedItems = await _feedRemoteRepository.feed(feed.url);
     final feedItems =
-        feedAndFeedItems.value2.map((it) => it.withFeedId(feed.id));
+        feedAndFeedItems.value2.map((it) => it.withFeedId(feed.id)).toList();
     return await _feedLocalRepository.createOrUpdateFeedItems(feedItems);
   }
 
@@ -90,7 +90,7 @@ class FeedService {
     _setIsSyncAndNotify(false);
   }
 
-  void _onErrorSyncFeed(Exception error) {
+  void _onErrorSyncFeed(Object error) {
     _logger.e(this, "Error syncFeed", error);
     _setIsSyncAndNotify(false);
     _syncException.add(error);
@@ -102,14 +102,14 @@ class FeedService {
         .createOrUpdateFeed(feedAndFeedItems.value1);
   }
 
-  Future removeFeed(String id) => _feedLocalRepository.removeFeed(id);
+  Future removeFeed(int id) => _feedLocalRepository.removeFeed(id);
 
   Future<List<Feed>> feeds() => _feedLocalRepository.feeds();
 
-  Future<List<FeedItem>> feedItems(String feedId) =>
+  Future<List<FeedItem>> feedItems(int feedId) =>
       _feedLocalRepository.feedItems(feedId);
 
-  Future<FeedItem> findFeedItem(String id) =>
+  Future<FeedItem> findFeedItem(int id) =>
       _feedLocalRepository.findFeedItem(id);
 
   void _setIsSyncAndNotify(bool isSync) {

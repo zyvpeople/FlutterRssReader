@@ -1,6 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rss_reader/datasource/local/FeedLocalRepository.dart';
+import 'package:flutter_rss_reader/datasource/logger/LogFormatter.dart';
+import 'package:flutter_rss_reader/datasource/logger/LogWriter.dart';
+import 'package:flutter_rss_reader/datasource/logger/Logger.dart';
+import 'package:flutter_rss_reader/datasource/remote/FeedParser.dart';
+import 'package:flutter_rss_reader/datasource/remote/FeedRemoteRepository.dart';
+import 'package:flutter_rss_reader/datasource/remote/HttpClient.dart';
+import 'package:flutter_rss_reader/domain/service/FeedService.dart';
+import 'package:flutter_rss_reader/domain/service/NetworkService.dart';
+import 'package:flutter_rss_reader/presentation/router/Router.dart';
+import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
 
-void main() => runApp(MyApp());
+final _logger = Logger(LogFormatter(), LogWriter());
+final _feedRemoteRepository = FeedRemoteRepository(HttpClient(), FeedParser());
+final _feedLocalRepository = FeedLocalRepository(_logger);
+final _networkService = NetworkService();
+final _feedService = FeedService(
+    _feedRemoteRepository, _feedLocalRepository, _networkService, _logger);
+final _routerBloc = RouterBloc();
+
+void main() {
+  _feedService.init();
+  runApp(MaterialApp(title: "Rss reader", home: Router(_routerBloc, _feedService)));
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

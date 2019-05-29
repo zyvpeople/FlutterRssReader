@@ -69,6 +69,14 @@ void main() {
     } catch (e) {}
   });
 
+  test("parse throws error if feedItem does not have guid", () async {
+    try {
+      await parser.parse(Uri.parse("http://feeds.bbci.co.uk/news/rss.xml"),
+          _incorrectXmlWithFeedAndWithoutFeedItemsGuid());
+      fail("Exception is expected");
+    } catch (e) {}
+  });
+
   test("parse throws error if feedItem does not have pubDate", () async {
     try {
       await parser.parse(Uri.parse("http://feeds.bbci.co.uk/news/rss.xml"),
@@ -98,6 +106,7 @@ Feed _expectedFeed() => Feed(
 
 FeedItem _expectedFeedItem1() => FeedItem(
     0,
+    "Test server id 1",
     "Test feedItem title 1",
     "Test feedItem description 1",
     DateTime(2019, 5, 23, 6, 41, 4, 0, 0),
@@ -109,6 +118,7 @@ FeedItem _expectedFeedItem1() => FeedItem(
 FeedItem _expectedFeedItem2() {
   return FeedItem(
       0,
+      "Test server id 2",
       "Test feedItem title 2",
       "Test feedItem description 2",
       DateTime(2019, 5, 22, 23, 1, 40, 0, 0),
@@ -120,6 +130,7 @@ FeedItem _expectedFeedItem2() {
 
 FeedItem _expectedFeedItem3() => FeedItem(
     0,
+    "Test server id 3",
     "Test feedItem title 3",
     "Test feedItem description 3",
     DateTime(2019, 5, 23, 8, 9, 8, 0, 0),
@@ -150,6 +161,7 @@ String _correctXmlWithFeedAndFeedItems() => """
             <title>Test feedItem title 1</title>
             <description>Test feedItem description 1</description>
             <link>https://www.bbc.co.uk/news/uk-politics-48372665</link>
+            <guid isPermaLink="true">Test server id 1</guid>
             <pubDate>Thu, 23 May 2019 06:41:04 GMT</pubDate>
             <media:thumbnail width="976" height="549" url="http://c.files.bbci.co.uk/BC81/production/_107075284_polling_station_1_reuters.jpg"/>
         </item>
@@ -157,6 +169,7 @@ String _correctXmlWithFeedAndFeedItems() => """
             <title>Test feedItem title 2</title>
             <description>Test feedItem description 2</description>
             <link>https://www.bbc.co.uk/news/uk-politics-48374841</link>
+            <guid isPermaLink="true">Test server id 2</guid>
             <pubDate>Wed, 22 May 2019 23:01:40 GMT</pubDate>
             <media:thumbnail width="976" height="549" url="http://c.files.bbci.co.uk/B42F/production/_107072164_p07b1qfw.jpg"/>
         </item>
@@ -164,6 +177,7 @@ String _correctXmlWithFeedAndFeedItems() => """
             <title>Test feedItem title 3</title>
             <description>Test feedItem description 3</description>
             <link>https://www.bbc.co.uk/news/business-48377232</link>
+            <guid isPermaLink="true">Test server id 3</guid>
             <pubDate>Thu, 23 May 2019 08:09:08 GMT</pubDate>
             <media:thumbnail width="2048" height="1152" url="http://c.files.bbci.co.uk/179E1/production/_107073769_gettyimages-1049816548.jpg"/>
         </item>
@@ -206,6 +220,7 @@ String _incorrectXmlWithoutFeed() => """
             <title>Test feedItem title 1</title>
             <description>Test feedItem description 1</description>
             <link>https://www.bbc.co.uk/news/uk-politics-48372665</link>
+            <guid isPermaLink="true">Test server id 1</guid>
             <pubDate>Thu, 23 May 2019 06:41:04 GMT</pubDate>
             <media:thumbnail width="976" height="549" url="http://c.files.bbci.co.uk/BC81/production/_107075284_polling_station_1_reuters.jpg"/>
         </item>
@@ -213,6 +228,7 @@ String _incorrectXmlWithoutFeed() => """
             <title>Test feedItem title 2</title>
             <description>Test feedItem description 2</description>
             <link>https://www.bbc.co.uk/news/uk-politics-48374841</link>
+            <guid isPermaLink="true">Test server id 2</guid>
             <pubDate>Wed, 22 May 2019 23:01:40 GMT</pubDate>
             <media:thumbnail width="976" height="549" url="http://c.files.bbci.co.uk/B42F/production/_107072164_p07b1qfw.jpg"/>
         </item>
@@ -220,6 +236,7 @@ String _incorrectXmlWithoutFeed() => """
             <title>Test feedItem title 3</title>
             <description>Test feedItem description 3</description>
             <link>https://www.bbc.co.uk/news/business-48377232</link>
+            <guid isPermaLink="true">Test server id 3</guid>
             <pubDate>Thu, 23 May 2019 08:09:08 GMT</pubDate>
             <media:thumbnail width="2048" height="1152" url="http://c.files.bbci.co.uk/179E1/production/_107073769_gettyimages-1049816548.jpg"/>
         </item>
@@ -270,6 +287,7 @@ String _incorrectXmlWithFeedAndWithoutFeedItemsTitle() => """
             <title>Test feedItem title 1</title>
             <description>Test feedItem description 1</description>
             <link>https://www.bbc.co.uk/news/uk-politics-48372665</link>
+            <guid isPermaLink="true">Test server id 1</guid>
             <pubDate>Thu, 23 May 2019 06:41:04 GMT</pubDate>
             <media:thumbnail width="976" height="549" url="http://c.files.bbci.co.uk/BC81/production/_107075284_polling_station_1_reuters.jpg"/>
         </item>
@@ -298,6 +316,7 @@ String _incorrectXmlWithFeedAndWithoutFeedItemsDescription() => """
         <item>
             <title>Test feedItem title 1</title>
             <link>https://www.bbc.co.uk/news/uk-politics-48372665</link>
+            <guid isPermaLink="true">Test server id 1</guid>
             <pubDate>Thu, 23 May 2019 06:41:04 GMT</pubDate>
             <media:thumbnail width="976" height="549" url="http://c.files.bbci.co.uk/BC81/production/_107075284_polling_station_1_reuters.jpg"/>
         </item>
@@ -326,6 +345,36 @@ String _incorrectXmlWithFeedAndWithoutFeedItemsLink() => """
         <item>
             <title>Test feedItem title 1</title>
             <description>Test feedItem description 1</description>
+            <guid isPermaLink="true">Test server id 1</guid>
+            <pubDate>Thu, 23 May 2019 06:41:04 GMT</pubDate>
+            <media:thumbnail width="976" height="549" url="http://c.files.bbci.co.uk/BC81/production/_107075284_polling_station_1_reuters.jpg"/>
+        </item>
+    </channel>
+</rss>
+""";
+
+String _incorrectXmlWithFeedAndWithoutFeedItemsGuid() => """
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet title="XSL_formatting" type="text/xsl" href="/shared/bsp/xsl/rss/nolsol.xsl"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" 
+    xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+    xmlns:atom="http://www.w3.org/2005/Atom" 
+    version="2.0" 
+    xmlns:media="http://search.yahoo.com/mrss/">
+    <channel>
+        <title>Test feed title</title>
+        <description>Test feed description</description>
+        <link>https://www.bbc.co.uk/news/</link>
+        <image>
+            <url>https://news.bbcimg.co.uk/nol/shared/img/bbc_news_120x60.gif</url>
+            <title>BBC News - Home</title>
+            <link>https://www.bbc.co.uk/news/</link>
+        </image>
+        <generator>RSS for Node</generator>
+        <item>
+            <title>Test feedItem title 1</title>
+            <description>Test feedItem description 1</description>
+            <link>https://www.bbc.co.uk/news/</link>
             <pubDate>Thu, 23 May 2019 06:41:04 GMT</pubDate>
             <media:thumbnail width="976" height="549" url="http://c.files.bbci.co.uk/BC81/production/_107075284_polling_station_1_reuters.jpg"/>
         </item>
@@ -355,6 +404,7 @@ String _incorrectXmlWithFeedAndWithoutFeedItemsPubDate() => """
             <title>Test feedItem title 1</title>
             <description>Test feedItem description 1</description>
             <link>https://www.bbc.co.uk/news/uk-politics-48372665</link>
+            <guid isPermaLink="true">Test server id 1</guid>
             <media:thumbnail width="976" height="549" url="http://c.files.bbci.co.uk/BC81/production/_107075284_polling_station_1_reuters.jpg"/>
         </item>
     </channel>
@@ -383,6 +433,7 @@ String _incorrectXmlWithFeedAndWithoutFeedItemsThumbnail() => """
             <title>Test feedItem title 1</title>
             <description>Test feedItem description 1</description>
             <link>https://www.bbc.co.uk/news/uk-politics-48372665</link>
+            <guid isPermaLink="true">Test server id 1</guid>
             <pubDate>Thu, 23 May 2019 06:41:04 GMT</pubDate>
         </item>
     </channel>

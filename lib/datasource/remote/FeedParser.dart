@@ -30,6 +30,7 @@ class FeedParser {
 
   FeedItem _parseFeedItem(xml.XmlElement itemElement) => FeedItem(
       0,
+      itemElement.findAllElements("guid").first.text,
       itemElement.findAllElements("title").first.text,
       itemElement.findAllElements("description").first.text,
       DateFormat("EEE, dd MMM yyyy hh:mm:ss zzz").parse(itemElement.findAllElements("pubDate").first.text),
