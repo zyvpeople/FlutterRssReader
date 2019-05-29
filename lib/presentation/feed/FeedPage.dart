@@ -4,14 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rss_reader/domain/entity/FeedItem.dart';
 import 'package:flutter_rss_reader/presentation/feed/FeedBloc.dart';
+import 'package:flutter_rss_reader/presentation/online_status/OnlineStatus.dart';
+import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
 
 class FeedPage extends StatefulWidget {
   final FeedBlocFactory _feedBlocFactory;
+  final OnlineStatusBlocFactory _onlineStatusBlocFactory;
 
-  FeedPage(this._feedBlocFactory);
+  FeedPage(this._feedBlocFactory, this._onlineStatusBlocFactory);
 
   @override
-  State createState() => _State(_feedBlocFactory.create());
+  State createState() =>
+      _State(_feedBlocFactory.create(), _onlineStatusBlocFactory);
 }
 
 class _State extends State<FeedPage> {
@@ -19,9 +23,10 @@ class _State extends State<FeedPage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
   final FeedBloc _feedBloc;
+  final OnlineStatusBlocFactory _onlineStatusBlocFactory;
   StreamSubscription _errorSubscription;
 
-  _State(this._feedBloc);
+  _State(this._feedBloc, this._onlineStatusBlocFactory);
 
   @override
   void initState() {
@@ -49,15 +54,21 @@ class _State extends State<FeedPage> {
     if (state.progress) {
       _refreshIndicatorKey.currentState.show();
     }
-    return RefreshIndicator(
-        key: _refreshIndicatorKey,
-        child: ListView.builder(
-            itemCount: state.feedItems.length,
-            itemBuilder: (BuildContext context, int index) =>
-                _listItem(state.feedItems[index])),
-        onRefresh: () async {
-          _feedBloc.dispatch(OnRefresh());
-        });
+    return Column(
+      children: <Widget>[
+        OnlineStatus(_onlineStatusBlocFactory),
+        Expanded(
+            child: RefreshIndicator(
+                key: _refreshIndicatorKey,
+                child: ListView.builder(
+                    itemCount: state.feedItems.length,
+                    itemBuilder: (BuildContext context, int index) =>
+                        _listItem(state.feedItems[index])),
+                onRefresh: () async {
+                  _feedBloc.dispatch(OnRefresh());
+                })),
+      ],
+    );
   }
 
   Widget _listItem(FeedItem feedItem) => ListTile(

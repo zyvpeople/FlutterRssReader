@@ -21,7 +21,9 @@ final _routerBloc = RouterBloc();
 
 void main() {
   _feedService.init();
-  runApp(MaterialApp(title: "Rss reader", home: Router(_routerBloc, _feedService)));
+  runApp(MaterialApp(
+      title: "Rss reader",
+      home: Router(_routerBloc, _feedService, _networkService)));
 }
 
 class MyApp extends StatelessWidget {
