@@ -28,8 +28,10 @@ class FeedItemState {
   final String title;
   final String summary;
   final String date;
+  final String imageUrl;
 
-  FeedItemState(this.feedItemOrNull, this.title, this.summary, this.date);
+  FeedItemState(
+      this.feedItemOrNull, this.title, this.summary, this.date, this.imageUrl);
 }
 
 class FeedItemBlocFactory {
@@ -68,13 +70,17 @@ class FeedItemBloc extends Bloc<FeedItemEvent, FeedItemState> {
   }
 
   @override
-  FeedItemState get initialState => FeedItemState(null, "", "", "");
+  FeedItemState get initialState => FeedItemState(null, "", "", "", "");
 
   @override
   Stream<FeedItemState> mapEventToState(FeedItemEvent event) async* {
     if (event is OnFeedItemLoaded) {
-      yield FeedItemState(event.feedItem, event.feedItem.title,
-          event.feedItem.summary, event.feedItem.dateTime.toIso8601String());
+      yield FeedItemState(
+          event.feedItem,
+          event.feedItem.title,
+          event.feedItem.summary,
+          event.feedItem.dateTime.toIso8601String(),
+          event.feedItem.imageUrl.toString());
     } else if (event is OnFeedItemNotFound) {
       _errorStreamController.sink.add("Feed item does not exist");
     } else if (event is OnErrorLoadFeedItem) {
