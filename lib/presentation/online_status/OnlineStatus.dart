@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
@@ -27,10 +28,12 @@ class _State extends State<OnlineStatus> {
       BlocBuilder<OnlineStatusEvent, OnlineStatusState>(
           bloc: _onlineStatusBloc,
           builder: (context, state) {
-            if (state.visible) {
-              return Text("No Internet connection");
-            } else {
-              return Container();
-            }
+            return state.visible
+                ? Container(
+                    color: Colors.red,
+                    height: 24,
+                    padding: EdgeInsets.only(left: 8, right: 8),
+                    child: Center(child: Text("No Internet connection")))
+                : Container();
           });
 }

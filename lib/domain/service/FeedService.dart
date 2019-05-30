@@ -28,10 +28,21 @@ class FeedService {
 
   bool get isSync => _isSync;
 
-  FeedService(this._feedRemoteRepository, this._feedLocalRepository,
+  FeedService._(this._feedRemoteRepository, this._feedLocalRepository,
       this._networkService, this._logger);
 
-  void init() {
+  factory FeedService(
+      FeedRemoteRepository feedRemoteRepository,
+      FeedLocalRepository feedLocalRepository,
+      NetworkService networkService,
+      Logger logger) {
+    final service = FeedService._(
+        feedRemoteRepository, feedLocalRepository, networkService, logger);
+    service._init();
+    return service;
+  }
+
+  void _init() {
     _subscriptions.add(_networkService.onlineStatusChanged.listen((_) => {
           if (_networkService.isOnline) {syncAll()}
         }));

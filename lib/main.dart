@@ -19,12 +19,9 @@ final _feedService = FeedService(
     _feedRemoteRepository, _feedLocalRepository, _networkService, _logger);
 final _routerBloc = RouterBloc();
 
-void main() {
-  _feedService.init();
-  runApp(MaterialApp(
-      title: "Rss reader",
-      home: Router(_routerBloc, _feedService, _networkService)));
-}
+void main() => runApp(MaterialApp(
+    title: "Rss reader",
+    home: Router(_routerBloc, _feedService, _networkService)));
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
