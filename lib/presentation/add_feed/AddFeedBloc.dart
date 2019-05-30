@@ -7,18 +7,25 @@ import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart'
 
 abstract class AddFeedEvent {}
 
-class OnAddFeed extends AddFeedEvent {
+class OnUrlChanged extends AddFeedEvent {
   final String url;
 
-  OnAddFeed(this.url);
+  OnUrlChanged(this.url);
 }
+
+class OnAddFeed extends AddFeedEvent {}
 
 class AddFeedState {
   final bool progress;
+  final String url;
+  final String urlIsIncorrectErrorOrNull;
 
-  AddFeedState(this.progress);
+  bool get editable => !progress;
 
-  AddFeedState withProgress(bool progress) => AddFeedState(progress);
+  AddFeedState(this.progress, this.url, this.urlIsIncorrectErrorOrNull);
+
+  AddFeedState withProgress(bool progress) =>
+      AddFeedState(progress, url, urlIsIncorrectErrorOrNull);
 }
 
 class AddFeedBlocFactory {
@@ -46,13 +53,21 @@ class AddFeedBloc extends Bloc<AddFeedEvent, AddFeedState> {
   }
 
   @override
-  AddFeedState get initialState => AddFeedState(false);
+  AddFeedState get initialState => AddFeedState(false, "", null);
 
   @override
   Stream<AddFeedState> mapEventToState(AddFeedEvent event) async* {
-    if (event is OnAddFeed) {
+    if (event is OnUrlChanged) {
       try {
         final url = Uri.parse(event.url);
+        yield AddFeedState(currentState.progress, url.toString(), null);
+      } catch (e) {
+        yield AddFeedState(
+            currentState.progress, event.url, "Url is not correct");
+      }
+    } else if (event is OnAddFeed) {
+      try {
+        final url = Uri.parse(currentState.url);
         yield currentState.withProgress(true);
         await _feedService.createFeed(url);
         yield currentState.withProgress(false);

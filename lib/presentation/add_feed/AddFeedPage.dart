@@ -35,36 +35,38 @@ class _State extends State<AddFeedPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: _appBar(),
-      body: BlocBuilder<AddFeedEvent, AddFeedState>(
-          bloc: _addFeedBloc, builder: (context, state) => _body(state)),
-    );
-  }
+  Widget build(BuildContext context) => BlocBuilder<AddFeedEvent, AddFeedState>(
+      bloc: _addFeedBloc,
+      builder: (context, state) => Scaffold(
+          key: _scaffoldKey,
+          appBar: _appBar(),
+          body: _body(state),
+          floatingActionButton: _fab(state)));
 
-  Widget _appBar() => AppBar(
-        title: Text("Add feed"),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.done),
-              onPressed: () =>
-                  _addFeedBloc.dispatch(OnAddFeed(textEditingController.text)))
-        ],
-      );
+  Widget _appBar() => AppBar(title: Text("Add feed"));
 
   Widget _body(AddFeedState state) {
-    final content = Column(
-      children: <Widget>[
-        Text("Add feed"),
-        TextField(controller: textEditingController)
-      ],
-    );
+    final textField = TextField(
+        controller: textEditingController,
+        decoration: InputDecoration(
+            labelText: "Feed URL", errorText: state.urlIsIncorrectErrorOrNull),
+        keyboardType: TextInputType.url,
+        enabled: state.editable,
+        onChanged: (it) => _addFeedBloc.dispatch(OnUrlChanged(it)),
+        onSubmitted: (it) => _addFeedBloc.dispatch(OnAddFeed()));
+    final content = Container(padding: EdgeInsets.all(16), child: textField);
     return state.progress
-        ? Stack(children: <Widget>[content, CircularProgressIndicator()])
+        ? Stack(children: <Widget>[
+            content,
+            Center(child: CircularProgressIndicator())
+          ])
         : content;
   }
+
+  Widget _fab(AddFeedState state) => FloatingActionButton(
+      child: Icon(Icons.add),
+      onPressed:
+          state.progress ? null : () => _addFeedBloc.dispatch(OnAddFeed()));
 
   void _showError(String error) {
     _scaffoldKey.currentState.showSnackBar(_snackBar(error));

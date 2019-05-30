@@ -32,7 +32,7 @@ class _State extends State<OnlineStatus> {
                 ? Container(
                     color: Colors.red,
                     height: 24,
-                    padding: EdgeInsets.only(left: 8, right: 8),
+                    padding: EdgeInsets.only(left: 16, right: 16),
                     child: Center(child: Text("No Internet connection")))
                 : Container();
           });

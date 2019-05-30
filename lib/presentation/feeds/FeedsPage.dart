@@ -80,7 +80,7 @@ class _FeedsState extends State<FeedsPage> {
       );
 
   Widget _fab() => FloatingActionButton(
-      child: Text("+"),
+      child: Icon(Icons.add),
       onPressed: () => _feedsBloc.dispatch(OnCreateFeedClicked()));
 
   void _showError(String error) {
