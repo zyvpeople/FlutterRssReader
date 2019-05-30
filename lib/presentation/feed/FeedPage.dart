@@ -72,7 +72,7 @@ class _State extends State<FeedPage> {
   }
 
   Widget _listItem(FeedItem feedItem) => ListTile(
-      title: Text(feedItem.title),
+      title: Text(feedItem.title, maxLines: 2, overflow: TextOverflow.ellipsis),
       onTap: () => _feedBloc.dispatch(OnFeedItemTapped(feedItem.id)));
 
   void _showError(String error) {
