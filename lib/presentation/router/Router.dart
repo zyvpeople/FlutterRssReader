@@ -6,6 +6,7 @@ import 'package:flutter_rss_reader/domain/service/NetworkService.dart';
 import 'package:flutter_rss_reader/presentation/add_feed/AddFeedBloc.dart';
 import 'package:flutter_rss_reader/presentation/add_feed/AddFeedPage.dart';
 import 'package:flutter_rss_reader/presentation/browser/BrowserPage.dart';
+import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed/FeedBloc.dart';
 import 'package:flutter_rss_reader/presentation/feed/FeedPage.dart';
 import 'package:flutter_rss_reader/presentation/feed_item/FeedItemBloc.dart';
@@ -21,21 +22,26 @@ class Router extends StatefulWidget {
   final router.RouterBloc _routerBloc;
   final FeedService _feedService;
   final NetworkService _networkService;
+  final WidgetFactory _widgetFactory;
 
-  const Router(this._routerBloc, this._feedService, this._networkService);
+  const Router(this._routerBloc, this._feedService, this._networkService,
+      this._widgetFactory);
 
   @override
-  State createState() => _State(_routerBloc, _feedService, _networkService);
+  State createState() =>
+      _State(_routerBloc, _feedService, _networkService, _widgetFactory);
 }
 
 class _State extends State<Router> {
   final router.RouterBloc _routerBloc;
   final FeedService _feedService;
   final NetworkService _networkService;
+  final WidgetFactory _widgetFactory;
 
   StreamSubscription _routerBlocSubscription;
 
-  _State(this._routerBloc, this._feedService, this._networkService);
+  _State(this._routerBloc, this._feedService, this._networkService,
+      this._widgetFactory);
 
   @override
   void initState() {
@@ -75,25 +81,25 @@ class _State extends State<Router> {
   @override
   Widget build(BuildContext context) => _feedsPage();
 
-  Widget _feedsPage() =>
-      FeedsPage(_feedsBlocFactory(), _onlineStatusBlocFactory());
+  Widget _feedsPage() => FeedsPage(
+      _feedsBlocFactory(), _onlineStatusBlocFactory(), _widgetFactory);
 
   FeedsBlocFactory _feedsBlocFactory() =>
       FeedsBlocFactory(_feedService, _routerBloc);
 
-  Widget _addFeedPage() => AddFeedPage(_addFeedBlocFactory());
+  Widget _addFeedPage() => AddFeedPage(_addFeedBlocFactory(), _widgetFactory);
 
   AddFeedBlocFactory _addFeedBlocFactory() =>
       AddFeedBlocFactory(_feedService, _routerBloc);
 
-  Widget _feedPage(int feedId) =>
-      FeedPage(_feedBlocFactory(feedId), _onlineStatusBlocFactory());
+  Widget _feedPage(int feedId) => FeedPage(
+      _feedBlocFactory(feedId), _onlineStatusBlocFactory(), _widgetFactory);
 
   FeedBlocFactory _feedBlocFactory(int feedId) =>
       FeedBlocFactory(feedId, _feedService, _routerBloc);
 
   Widget _feedItemPage(int feedItemId) =>
-      FeedItemPage(_feedItemBlocFactory(feedItemId));
+      FeedItemPage(_feedItemBlocFactory(feedItemId), _widgetFactory);
 
   FeedItemBlocFactory _feedItemBlocFactory(int feedItemId) =>
       FeedItemBlocFactory(feedItemId, _feedService, _routerBloc);

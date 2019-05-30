@@ -3,23 +3,26 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rss_reader/presentation/add_feed/AddFeedBloc.dart';
+import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
 
 class AddFeedPage extends StatefulWidget {
   final AddFeedBlocFactory _addFeedBlocFactory;
+  final WidgetFactory _widgetFactory;
 
-  AddFeedPage(this._addFeedBlocFactory);
+  AddFeedPage(this._addFeedBlocFactory, this._widgetFactory);
 
   @override
-  State createState() => _State(_addFeedBlocFactory.create());
+  State createState() => _State(_addFeedBlocFactory.create(), _widgetFactory);
 }
 
 class _State extends State<AddFeedPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final textEditingController = TextEditingController();
   final AddFeedBloc _addFeedBloc;
+  final WidgetFactory _widgetFactory;
   StreamSubscription _errorSubscription;
 
-  _State(this._addFeedBloc);
+  _State(this._addFeedBloc, this._widgetFactory);
 
   @override
   void initState() {
@@ -69,9 +72,6 @@ class _State extends State<AddFeedPage> {
           state.progress ? null : () => _addFeedBloc.dispatch(OnAddFeed()));
 
   void _showError(String error) {
-    _scaffoldKey.currentState.showSnackBar(_snackBar(error));
+    _scaffoldKey.currentState.showSnackBar(_widgetFactory.createSnackBar(error));
   }
-
-  //TODO: move snackbar to widget factory
-  Widget _snackBar(String text) => SnackBar(content: Text(text));
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rss_reader/domain/entity/Feed.dart';
+import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feeds/FeedsBloc.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatus.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
@@ -10,12 +11,14 @@ import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.d
 class FeedsPage extends StatefulWidget {
   final FeedsBlocFactory _feedsBlocFactory;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
+  final WidgetFactory _widgetFactory;
 
-  FeedsPage(this._feedsBlocFactory, this._onlineStatusBlocFactory);
+  FeedsPage(this._feedsBlocFactory, this._onlineStatusBlocFactory,
+      this._widgetFactory);
 
   @override
-  State createState() =>
-      _FeedsState(_feedsBlocFactory.create(), _onlineStatusBlocFactory);
+  State createState() => _FeedsState(
+      _feedsBlocFactory.create(), _onlineStatusBlocFactory, _widgetFactory);
 }
 
 class _FeedsState extends State<FeedsPage> {
@@ -24,9 +27,11 @@ class _FeedsState extends State<FeedsPage> {
       GlobalKey<RefreshIndicatorState>();
   final FeedsBloc _feedsBloc;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
+  final WidgetFactory _widgetFactory;
   StreamSubscription _errorSubscription;
 
-  _FeedsState(this._feedsBloc, this._onlineStatusBlocFactory);
+  _FeedsState(
+      this._feedsBloc, this._onlineStatusBlocFactory, this._widgetFactory);
 
   @override
   void initState() {
@@ -84,8 +89,7 @@ class _FeedsState extends State<FeedsPage> {
       onPressed: () => _feedsBloc.dispatch(OnCreateFeedClicked()));
 
   void _showError(String error) {
-    _scaffoldKey.currentState.showSnackBar(_snackBar(error));
+    _scaffoldKey.currentState
+        .showSnackBar(_widgetFactory.createSnackBar(error));
   }
-
-  Widget _snackBar(String text) => SnackBar(content: Text(text));
 }

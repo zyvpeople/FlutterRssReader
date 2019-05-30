@@ -2,24 +2,27 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed_item/FeedItemBloc.dart';
 
 //TODO: use paralax
 class FeedItemPage extends StatefulWidget {
   final FeedItemBlocFactory _feedItemBlocFactory;
+  final WidgetFactory _widgetFactory;
 
-  FeedItemPage(this._feedItemBlocFactory);
+  FeedItemPage(this._feedItemBlocFactory, this._widgetFactory);
 
   @override
-  State createState() => _State(_feedItemBlocFactory.create());
+  State createState() => _State(_feedItemBlocFactory.create(), _widgetFactory);
 }
 
 class _State extends State<FeedItemPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FeedItemBloc _feedItemBloc;
+  final WidgetFactory _widgetFactory;
   StreamSubscription _errorSubscription;
 
-  _State(this._feedItemBloc);
+  _State(this._feedItemBloc, this._widgetFactory);
 
   @override
   void initState() {
@@ -69,8 +72,7 @@ class _State extends State<FeedItemPage> {
       ]);
 
   void _showError(String error) {
-    _scaffoldKey.currentState.showSnackBar(_snackBar(error));
+    _scaffoldKey.currentState
+        .showSnackBar(_widgetFactory.createSnackBar(error));
   }
-
-  Widget _snackBar(String text) => SnackBar(content: Text(text));
 }
