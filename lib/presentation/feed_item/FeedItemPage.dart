@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rss_reader/presentation/feed_item/FeedItemBloc.dart';
 
-//TODO: add url sharing
 //TODO: use paralax
 class FeedItemPage extends StatefulWidget {
   final FeedItemBlocFactory _feedItemBlocFactory;
@@ -45,7 +44,10 @@ class _State extends State<FeedItemPage> {
   Widget _appBar() => AppBar(title: Text("Feed item"), actions: <Widget>[
         IconButton(
             icon: Icon(Icons.open_in_browser),
-            onPressed: () => _feedItemBloc.dispatch(OnOpenInBrowserTapped()))
+            onPressed: () => _feedItemBloc.dispatch(OnOpenInBrowserTapped())),
+        IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () => _feedItemBloc.dispatch(OnShareTapped()))
       ]);
 
   Widget _body(FeedItemState state) => ListView(children: <Widget>[

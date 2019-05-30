@@ -15,6 +15,7 @@ import 'package:flutter_rss_reader/presentation/feeds/FeedsPage.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart'
     as router;
+import 'package:share/share.dart';
 
 class Router extends StatefulWidget {
   final router.RouterBloc _routerBloc;
@@ -58,6 +59,8 @@ class _State extends State<Router> {
         } else if (event is router.OnBrowser) {
           Navigator.push(context,
               MaterialPageRoute(builder: (_) => _browserPage(event.url)));
+        } else if (event is router.OnShare) {
+          Share.share(event.url.toString());
         }
       }
     });

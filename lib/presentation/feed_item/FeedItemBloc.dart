@@ -23,6 +23,8 @@ class OnErrorLoadFeedItem extends FeedItemEvent {
 
 class OnOpenInBrowserTapped extends FeedItemEvent {}
 
+class OnShareTapped extends FeedItemEvent {}
+
 class FeedItemState {
   final FeedItem feedItemOrNull;
   final String title;
@@ -86,9 +88,14 @@ class FeedItemBloc extends Bloc<FeedItemEvent, FeedItemState> {
     } else if (event is OnErrorLoadFeedItem) {
       _errorStreamController.sink.add("Error load feed item");
     } else if (event is OnOpenInBrowserTapped) {
-      var feedItem = currentState.feedItemOrNull;
+      final feedItem = currentState.feedItemOrNull;
       if (feedItem != null) {
         _routerBloc.dispatch(OnBrowser(feedItem.url));
+      }
+    } else if (event is OnShareTapped) {
+      final feedItem = currentState.feedItemOrNull;
+      if (feedItem != null) {
+        _routerBloc.dispatch(OnShare(feedItem.url));
       }
     }
   }

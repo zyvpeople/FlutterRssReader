@@ -30,6 +30,12 @@ class OnBrowser extends RouterEvent {
   OnBrowser(this.url);
 }
 
+class OnShare extends RouterEvent {
+  final Uri url;
+
+  OnShare(this.url);
+}
+
 class RouterBloc extends Bloc<RouterEvent, RouterState> {
   @override
   RouterState get initialState => RouterState(null);
