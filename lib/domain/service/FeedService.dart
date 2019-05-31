@@ -108,11 +108,17 @@ class FeedService {
   }
 
   Future createFeed(Uri feedUrl) async {
-    final feedAndFeedItems = await _feedRemoteRepository.feed(feedUrl);
-    return await _feedLocalRepository
-        .createOrUpdateFeed(feedAndFeedItems.value1);
+    try {
+      final feedAndFeedItems = await _feedRemoteRepository.feed(feedUrl);
+      return await _feedLocalRepository
+              .createOrUpdateFeed(feedAndFeedItems.value1);
+    } catch (e) {
+      _logger.e(this, "Error createFeed", e);
+      throw e;
+    }
   }
 
+  //TODO: implement in ui
   Future removeFeed(int id) => _feedLocalRepository.removeFeed(id);
 
   Future<List<Feed>> feeds() => _feedLocalRepository.feeds();

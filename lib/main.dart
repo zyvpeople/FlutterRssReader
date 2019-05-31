@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rss_reader/datasource/local/FeedLocalRepository.dart';
+import 'package:flutter_rss_reader/datasource/local/SqfliteFeedLocalRepository.dart';
 import 'package:flutter_rss_reader/datasource/logger/LogFormatter.dart';
 import 'package:flutter_rss_reader/datasource/logger/LogWriter.dart';
 import 'package:flutter_rss_reader/datasource/logger/Logger.dart';
@@ -14,7 +15,7 @@ import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
 
 final _logger = Logger(LogFormatter(), LogWriter());
 final _feedRemoteRepository = FeedRemoteRepository(HttpClient(), FeedParser());
-final _feedLocalRepository = FeedLocalRepository(_logger);
+final _feedLocalRepository = SqfliteFeedLocalRepository();
 final _networkService = NetworkService();
 final _feedService = FeedService(
     _feedRemoteRepository, _feedLocalRepository, _networkService, _logger);

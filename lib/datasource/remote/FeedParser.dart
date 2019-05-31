@@ -9,7 +9,7 @@ class FeedParser {
     final document = xml.parse(data);
     final channelElement = document.findAllElements("channel").first;
     final feed = _parseFeed(feedUrl, channelElement);
-    final feedItems = _parseFeedItems(channelElement);
+    final feedItems = _parseFeedItems(channelElement).toList();
     return Tuple2(feed, feedItems);
   }
 
@@ -33,7 +33,8 @@ class FeedParser {
       itemElement.findAllElements("guid").first.text,
       itemElement.findAllElements("title").first.text,
       itemElement.findAllElements("description").first.text,
-      DateFormat("EEE, dd MMM yyyy hh:mm:ss zzz").parse(itemElement.findAllElements("pubDate").first.text),
+      DateFormat("EEE, dd MMM yyyy hh:mm:ss zzz")
+          .parse(itemElement.findAllElements("pubDate").first.text),
       Uri.parse(itemElement.findAllElements("link").first.text),
       Uri.parse(itemElement
           .findAllElements("media:thumbnail")

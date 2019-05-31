@@ -13,10 +13,10 @@ class OnFeedItemsChanged extends FeedEvent {}
 
 class OnSyncStatusChanged extends FeedEvent {}
 
-class OnSyncException extends FeedEvent {
-  final Exception exception;
+class OnSyncError extends FeedEvent {
+  final Object error;
 
-  OnSyncException(this.exception);
+  OnSyncError(this.error);
 }
 
 class OnFeedItemTapped extends FeedEvent {
@@ -65,7 +65,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     bloc._subscriptions.add(feedService.syncStatusChanged
         .listen((_) => {bloc.dispatch(OnSyncStatusChanged())}));
     bloc._subscriptions.add(feedService.syncException
-        .listen((it) => {bloc.dispatch(OnSyncException(it))}));
+        .listen((it) => {bloc.dispatch(OnSyncError(it))}));
     bloc.dispatch(OnFeedItemsChanged());
     bloc.dispatch(OnSyncStatusChanged());
     bloc.dispatch(OnRefresh());
@@ -91,7 +91,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       yield currentState.withFeedItems(await _feedService.feedItems(_feedId));
     } else if (event is OnSyncStatusChanged) {
       yield currentState.withProgress(_feedService.isSync);
-    } else if (event is OnSyncException) {
+    } else if (event is OnSyncError) {
       _errorStreamController.sink.add("Error sync feed");
     } else if (event is OnFeedItemTapped) {
       _routerBloc.dispatch(OnFeedItem(event.feedItemId));
