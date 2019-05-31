@@ -38,6 +38,12 @@ class OnFeedTapped extends FeedsEvent {
   OnFeedTapped(this.feedId);
 }
 
+class OnDeleteFeedItem extends FeedsEvent {
+  final int feedId;
+
+  OnDeleteFeedItem(this.feedId);
+}
+
 abstract class FeedsRouter {
   void onAddFeed();
 }
@@ -101,6 +107,12 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
       _errorStreamController.add("Error sync feeds");
     } else if (event is OnFeedTapped) {
       _routerBloc.dispatch(OnFeed(event.feedId));
+    } else if (event is OnDeleteFeedItem) {
+      try {
+        _feedService.deleteFeed(event.feedId);
+      } catch (e) {
+        _errorStreamController.sink.add("Error delete feed");
+      }
     }
   }
 }

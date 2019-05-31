@@ -74,7 +74,7 @@ class SqfliteFeedLocalRepository implements FeedLocalRepository {
   }
 
   @override
-  Future removeFeed(int id) async {
+  Future deleteFeed(int id) async {
     final database = await _database;
     await database.rawDelete("DELETE FROM Feeds WHERE id = ?", [id]);
     _feedsChanged.sink.add(null);

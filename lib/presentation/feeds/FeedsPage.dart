@@ -79,10 +79,13 @@ class _FeedsState extends State<FeedsPage> {
     );
   }
 
-  Widget _listItem(Feed feed) => ListTile(
-        title: Text(feed.title),
-        onTap: () => _feedsBloc.dispatch(OnFeedTapped(feed.id)),
-      );
+  Widget _listItem(Feed feed) => Dismissible(
+      key: Key(feed.id.toString()),
+      onDismissed: (_) => _feedsBloc.dispatch(OnDeleteFeedItem(feed.id)),
+      direction: DismissDirection.endToStart,
+      child: ListTile(
+          title: Text(feed.title),
+          onTap: () => _feedsBloc.dispatch(OnFeedTapped(feed.id))));
 
   Widget _fab() => FloatingActionButton(
       child: Icon(Icons.add),

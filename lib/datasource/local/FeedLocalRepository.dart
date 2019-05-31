@@ -70,10 +70,10 @@ class FeedLocalRepository {
     }
   }
 
-  Future removeFeed(int id) async {
+  Future deleteFeed(int id) async {
     _feeds.removeWhere((it) => it.id == id);
     _feedItems.removeWhere((it) => it.feedId == id);
-    _logger.d(this, "Success removeFeed");
+    _logger.d(this, "Success deleteFeed");
     _feedsChanged.sink.add(null);
     _feedItemsChanged.sink.add(null);
   }

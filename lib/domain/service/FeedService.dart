@@ -118,8 +118,7 @@ class FeedService {
     }
   }
 
-  //TODO: implement in ui
-  Future removeFeed(int id) => _feedLocalRepository.removeFeed(id);
+  Future deleteFeed(int id) => _feedLocalRepository.deleteFeed(id);
 
   Future<List<Feed>> feeds() => _feedLocalRepository.feeds();
 
