@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter_rss_reader/domain/entity/Feed.dart';
 import 'package:flutter_rss_reader/domain/entity/FeedItem.dart';
 import 'package:flutter_rss_reader/domain/service/FeedService.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
@@ -8,6 +9,8 @@ import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
 abstract class FeedEvent {}
 
 class OnRefresh extends FeedEvent {}
+
+class OnFeedChanged extends FeedEvent {}
 
 class OnFeedItemsChanged extends FeedEvent {}
 
@@ -25,16 +28,25 @@ class OnFeedItemTapped extends FeedEvent {
   OnFeedItemTapped(this.feedItemId);
 }
 
+class OnOpenInBrowserTapped extends FeedEvent {}
+
 class FeedState {
+  final Feed feedOrNull;
   final List<FeedItem> feedItems;
   final bool progress;
 
-  FeedState(this.feedItems, this.progress);
+  String get title => feedOrNull != null ? feedOrNull.title : "";
+
+  FeedState(this.feedOrNull, this.feedItems, this.progress);
+
+  FeedState withFeed(Feed feedOrNull) =>
+      FeedState(feedOrNull, feedItems, progress);
 
   FeedState withFeedItems(List<FeedItem> feedItems) =>
-      FeedState(feedItems, progress);
+      FeedState(feedOrNull, feedItems, progress);
 
-  FeedState withProgress(bool progress) => FeedState(feedItems, progress);
+  FeedState withProgress(bool progress) =>
+      FeedState(feedOrNull, feedItems, progress);
 }
 
 class FeedBlocFactory {
@@ -60,12 +72,15 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
 
   factory FeedBloc(int feedId, FeedService feedService, RouterBloc routerBloc) {
     final bloc = FeedBloc._(feedId, feedService, routerBloc);
+    bloc._subscriptions.add(
+        feedService.feedsChanged.listen((_) => bloc.dispatch(OnFeedChanged())));
     bloc._subscriptions.add(feedService.feedItemsChanged
         .listen((_) => bloc.dispatch(OnFeedItemsChanged())));
     bloc._subscriptions.add(feedService.syncStatusChanged
         .listen((_) => {bloc.dispatch(OnSyncStatusChanged())}));
     bloc._subscriptions.add(feedService.syncException
         .listen((it) => {bloc.dispatch(OnSyncError(it))}));
+    bloc.dispatch(OnFeedChanged());
     bloc.dispatch(OnFeedItemsChanged());
     bloc.dispatch(OnSyncStatusChanged());
     bloc.dispatch(OnRefresh());
@@ -81,12 +96,14 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   }
 
   @override
-  FeedState get initialState => FeedState([], false);
+  FeedState get initialState => FeedState(null, [], false);
 
   @override
   Stream<FeedState> mapEventToState(FeedEvent event) async* {
     if (event is OnRefresh) {
       _feedService.syncFeed(_feedId);
+    } else if (event is OnFeedChanged) {
+      yield currentState.withFeed(await _feedService.findFeed(_feedId));
     } else if (event is OnFeedItemsChanged) {
       yield currentState.withFeedItems(await _feedService.feedItems(_feedId));
     } else if (event is OnSyncStatusChanged) {
@@ -95,6 +112,11 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       _errorStreamController.sink.add("Error sync feed");
     } else if (event is OnFeedItemTapped) {
       _routerBloc.dispatch(OnFeedItem(event.feedItemId));
+    } else if (event is OnOpenInBrowserTapped) {
+      var feed = currentState.feedOrNull;
+      if (feed != null) {
+        _routerBloc.dispatch(OnBrowser(feed.siteUrl));
+      }
     }
   }
 }

@@ -102,7 +102,7 @@ void main() {
 }
 
 Feed _expectedFeed() => Feed(
-    0, "Test feed title", Uri.parse("http://feeds.bbci.co.uk/news/rss.xml"));
+    0, "Test feed title", Uri.parse("http://feeds.bbci.co.uk/news/rss.xml"), Uri.parse("https://www.bbc.co.uk/news/"), Uri.parse("https://news.bbcimg.co.uk/nol/shared/img/bbc_news_120x60.gif"));
 
 FeedItem _expectedFeedItem1() => FeedItem(
     0,

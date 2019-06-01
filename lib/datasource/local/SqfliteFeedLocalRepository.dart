@@ -36,7 +36,9 @@ class SqfliteFeedLocalRepository implements FeedLocalRepository {
         await database.execute("""CREATE TABLE IF NOT EXISTS Feeds (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
-                url TEXT NOT NULL UNIQUE)""");
+                url TEXT NOT NULL UNIQUE,
+                siteUrl TEXT NOT NULL,
+                imageUrl TEXT NOT NULL)""");
       });
       await database.execute("""CREATE TABLE IF NOT EXISTS FeedItems (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,8 +70,14 @@ class SqfliteFeedLocalRepository implements FeedLocalRepository {
   @override
   Future createOrUpdateFeed(Feed feed) async {
     final database = await _database;
-    await database.rawInsert("""INSERT OR REPLACE INTO Feeds (title,url)
-        VALUES (?,?)""", [feed.title, feed.url.toString()]);
+    await database
+        .rawInsert("""INSERT OR REPLACE INTO Feeds (title,url,siteUrl,imageUrl)
+        VALUES (?,?,?,?)""", [
+      feed.title,
+      feed.url.toString(),
+      feed.siteUrl.toString(),
+      feed.imageUrl.toString()
+    ]);
     _feedsChanged.sink.add(null);
   }
 
@@ -83,8 +91,8 @@ class SqfliteFeedLocalRepository implements FeedLocalRepository {
   @override
   Future<List<Feed>> feeds() async {
     final database = await _database;
-    final rows = await database
-        .rawQuery("SELECT id, title, url FROM Feeds ORDER BY title ASC");
+    final rows = await database.rawQuery(
+        "SELECT id, title, url, siteUrl, imageUrl FROM Feeds ORDER BY title ASC");
     return rows.map(_rowToFeed).toList();
   }
 
@@ -92,12 +100,16 @@ class SqfliteFeedLocalRepository implements FeedLocalRepository {
   Future<Feed> findFeed(int id) async {
     final database = await _database;
     final rows = await database.rawQuery(
-        "SELECT id, title, url FROM Feeds WHERE id = ? LIMIT 1", [id]);
+        "SELECT id, title, url, siteUrl, imageUrl FROM Feeds WHERE id = ? LIMIT 1", [id]);
     return rows.map(_rowToFeed).firstWhere((it) => true, orElse: () => null);
   }
 
-  Feed _rowToFeed(Map<String, dynamic> row) =>
-      Feed(row["id"], row["title"], Uri.parse(row["url"]));
+  Feed _rowToFeed(Map<String, dynamic> row) => Feed(
+      row["id"],
+      row["title"],
+      Uri.parse(row["url"]),
+      Uri.parse(row["siteUrl"]),
+      Uri.parse(row["imageUrl"]));
 
   @override
   Future createOrUpdateFeedItems(List<FeedItem> feedItems) =>

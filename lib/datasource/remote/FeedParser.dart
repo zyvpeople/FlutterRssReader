@@ -1,8 +1,8 @@
 import 'package:flutter_rss_reader/domain/common/Tuple2.dart';
 import 'package:flutter_rss_reader/domain/entity/Feed.dart';
 import 'package:flutter_rss_reader/domain/entity/FeedItem.dart';
-import 'package:xml/xml.dart' as xml;
 import 'package:intl/intl.dart';
+import 'package:xml/xml.dart' as xml;
 
 class FeedParser {
   Future<Tuple2<Feed, List<FeedItem>>> parse(Uri feedUrl, String data) async {
@@ -13,13 +13,27 @@ class FeedParser {
     return Tuple2(feed, feedItems);
   }
 
-  Feed _parseFeed(Uri feedUrl, xml.XmlElement channelElement) => Feed(
-      0,
-      channelElement
-          .findAllElements("title")
-          .firstWhere((it) => it.parent == channelElement)
-          .text,
-      feedUrl);
+  Feed _parseFeed(Uri feedUrl, xml.XmlElement channelElement) {
+    final imageElement = channelElement
+        .findAllElements("image")
+        .firstWhere((it) => it.parent == channelElement);
+    final imageUrl = imageElement
+        .findAllElements("url")
+        .firstWhere((it) => it.parent == imageElement)
+        .text;
+    return Feed(
+        0,
+        channelElement
+            .findAllElements("title")
+            .firstWhere((it) => it.parent == channelElement)
+            .text,
+        feedUrl,
+        Uri.parse(channelElement
+            .findAllElements("link")
+            .firstWhere((it) => it.parent == channelElement)
+            .text),
+        Uri.parse(imageUrl));
+  }
 
   List<FeedItem> _parseFeedItems(xml.XmlElement channelElement) =>
       channelElement

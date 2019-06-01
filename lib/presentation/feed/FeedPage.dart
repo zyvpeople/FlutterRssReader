@@ -46,13 +46,17 @@ class _State extends State<FeedPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-      key: _scaffoldKey,
-      appBar: _appBar(),
-      body: BlocBuilder<FeedEvent, FeedState>(
-          bloc: _feedBloc, builder: (context, state) => _body(state)));
+  Widget build(BuildContext context) => BlocBuilder<FeedEvent, FeedState>(
+      bloc: _feedBloc,
+      builder: (context, state) => Scaffold(
+          key: _scaffoldKey, appBar: _appBar(state), body: _body(state)));
 
-  Widget _appBar() => AppBar(title: Text("Feed"));
+  Widget _appBar(FeedState state) =>
+      AppBar(title: Text(state.title), actions: <Widget>[
+        IconButton(
+            icon: Icon(Icons.open_in_browser),
+            onPressed: () => _feedBloc.dispatch(OnOpenInBrowserTapped()))
+      ]);
 
   Widget _body(FeedState state) {
     if (state.progress) {
