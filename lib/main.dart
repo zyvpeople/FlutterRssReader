@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rss_reader/datasource/local/FeedLocalRepository.dart';
 import 'package:flutter_rss_reader/datasource/local/SqfliteFeedLocalRepository.dart';
 import 'package:flutter_rss_reader/datasource/logger/LogFormatter.dart';
 import 'package:flutter_rss_reader/datasource/logger/LogWriter.dart';
@@ -10,8 +9,12 @@ import 'package:flutter_rss_reader/datasource/remote/HttpClient.dart';
 import 'package:flutter_rss_reader/domain/service/FeedService.dart';
 import 'package:flutter_rss_reader/domain/service/NetworkService.dart';
 import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
-import 'package:flutter_rss_reader/presentation/router/Router.dart';
+import 'package:flutter_rss_reader/presentation/router/PhoneRouter.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
+import 'package:flutter_rss_reader/presentation/router/bloc_factory/BlocFactory.dart';
+import 'package:flutter_rss_reader/presentation/router/page_factory/PageFactory.dart';
+import 'package:flutter_rss_reader/presentation/router/route_factory/RouteFactory.dart'
+    as routeFactory;
 
 //TODO: add i18n
 //TODO: add tablet mode
@@ -24,7 +27,10 @@ final _networkService = NetworkService();
 final _feedService = FeedService(
     _feedRemoteRepository, _feedLocalRepository, _networkService, _logger);
 final _routerBloc = RouterBloc();
+final _routeFactory = routeFactory.RouteFactory();
+final _blocFactory = BlocFactory(_feedService, _networkService, _routerBloc);
+final _pageFactory = PageFactory(_blocFactory, WidgetFactory());
 
 void main() => runApp(MaterialApp(
     title: "Rss reader",
-    home: Router(_routerBloc, _feedService, _networkService, WidgetFactory())));
+    home: PhoneRouter(_routerBloc, _routeFactory, _pageFactory)));
