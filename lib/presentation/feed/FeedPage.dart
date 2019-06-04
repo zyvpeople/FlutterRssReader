@@ -7,6 +7,7 @@ import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed/FeedBloc.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatus.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class FeedPage extends StatefulWidget {
   final FeedBlocFactory _feedBlocFactory;
@@ -80,8 +81,18 @@ class _State extends State<FeedPage> {
   }
 
   Widget _listItem(FeedItem feedItem) => ListTile(
+      leading: _image(feedItem),
       title: Text(feedItem.title, maxLines: 2, overflow: TextOverflow.ellipsis),
       onTap: () => _feedBloc.dispatch(OnFeedItemTapped(feedItem.id)));
+
+  Widget _image(FeedItem feedItem) => FadeInImage.memoryNetwork(
+      width: 36,
+      height: 36,
+      image: feedItem.imageUrl.toString(),
+      placeholder: kTransparentImage);
+
+  Widget _imagePlaceholder() =>
+      Container(color: Colors.white, width: 36, height: 36);
 
   void _showError(String error) {
     _scaffoldKey.currentState

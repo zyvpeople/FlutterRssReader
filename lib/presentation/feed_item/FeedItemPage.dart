@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed_item/FeedItemBloc.dart';
+import 'package:transparent_image/transparent_image.dart';
 
-//TODO: use paralax
 class FeedItemPage extends StatefulWidget {
   final FeedItemBlocFactory _feedItemBlocFactory;
   final WidgetFactory _widgetFactory;
@@ -54,11 +54,11 @@ class _State extends State<FeedItemPage> {
       ]);
 
   Widget _body(FeedItemState state) => ListView(children: <Widget>[
-        Image.network(
-          state.imageUrl,
-          height: 200,
-          fit: BoxFit.fill,
-        ),
+        FadeInImage.memoryNetwork(
+            height: 200,
+            fit: BoxFit.fill,
+            image: state.imageUrl,
+            placeholder: kTransparentImage),
         Container(
             child: Text(state.title,
                 style: TextStyle(fontWeight: FontWeight.bold)),

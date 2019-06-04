@@ -7,6 +7,7 @@ import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feeds/FeedsBloc.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatus.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class FeedsPage extends StatefulWidget {
   final FeedsBlocFactory _feedsBlocFactory;
@@ -84,8 +85,18 @@ class _FeedsState extends State<FeedsPage> {
       onDismissed: (_) => _feedsBloc.dispatch(OnDeleteFeedItem(feed.id)),
       direction: DismissDirection.endToStart,
       child: ListTile(
+          leading: _image(feed),
           title: Text(feed.title),
           onTap: () => _feedsBloc.dispatch(OnFeedTapped(feed.id))));
+
+  Widget _image(Feed feed) => FadeInImage.memoryNetwork(
+      width: 36,
+      height: 36,
+      image: feed.imageUrl.toString(),
+      placeholder: kTransparentImage);
+
+  Widget _imagePlaceholder() =>
+      Container(color: Colors.white, width: 36, height: 36);
 
   Widget _fab() => FloatingActionButton(
       child: Icon(Icons.add),
