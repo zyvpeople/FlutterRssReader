@@ -78,8 +78,11 @@ class FeedLocalRepository {
     _feedItemsChanged.sink.add(null);
   }
 
-  Future<List<Feed>> feeds() async {
-    final copy = _feeds.toList();
+  Future<List<Feed>> feeds(String searchTextOrNull) async {
+    final copy = _feeds
+        .where((it) =>
+            searchTextOrNull == null || it.title.contains(searchTextOrNull))
+        .toList();
     copy.sort((first, second) => first.title.compareTo(second.title));
     return copy;
   }
@@ -137,8 +140,12 @@ class FeedLocalRepository {
     }
   }
 
-  Future<List<FeedItem>> feedItems(int feedId) async {
-    final items = _feedItems.where((it) => it.feedId == feedId).toList();
+  Future<List<FeedItem>> feedItems(int feedId, String searchTextOrNull) async {
+    final items = _feedItems
+        .where((it) =>
+            it.feedId == feedId &&
+            (searchTextOrNull == null || it.title.contains(searchTextOrNull)))
+        .toList();
     items.sort((first, second) => first.dateTime.compareTo(second.dateTime));
     return items;
   }

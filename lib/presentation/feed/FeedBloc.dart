@@ -30,23 +30,39 @@ class OnFeedItemTapped extends FeedEvent {
 
 class OnOpenInBrowserTapped extends FeedEvent {}
 
+class OnSearchTapped extends FeedEvent {}
+
+class OnSearchTextEntered extends FeedEvent {
+  final String text;
+
+  OnSearchTextEntered(this.text);
+}
+
+class OnSearchCloseTapped extends FeedEvent {}
+
 class FeedState {
   final Feed feedOrNull;
   final List<FeedItem> feedItems;
   final bool progress;
+  final bool search;
+  final String searchText;
 
   String get title => feedOrNull != null ? feedOrNull.title : "";
 
-  FeedState(this.feedOrNull, this.feedItems, this.progress);
+  FeedState(this.feedOrNull, this.feedItems, this.progress, this.search,
+      this.searchText);
 
   FeedState withFeed(Feed feedOrNull) =>
-      FeedState(feedOrNull, feedItems, progress);
+      FeedState(feedOrNull, feedItems, progress, search, searchText);
 
   FeedState withFeedItems(List<FeedItem> feedItems) =>
-      FeedState(feedOrNull, feedItems, progress);
+      FeedState(feedOrNull, feedItems, progress, search, searchText);
 
   FeedState withProgress(bool progress) =>
-      FeedState(feedOrNull, feedItems, progress);
+      FeedState(feedOrNull, feedItems, progress, search, searchText);
+
+  FeedState withSearch(bool search, String searchTextOrNull) =>
+      FeedState(feedOrNull, feedItems, progress, search, searchTextOrNull);
 }
 
 class FeedBlocFactory {
@@ -96,7 +112,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   }
 
   @override
-  FeedState get initialState => FeedState(null, [], false);
+  FeedState get initialState => FeedState(null, [], false, false, "");
 
   @override
   Stream<FeedState> mapEventToState(FeedEvent event) async* {
@@ -105,7 +121,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     } else if (event is OnFeedChanged) {
       yield currentState.withFeed(await _feedService.findFeed(_feedId));
     } else if (event is OnFeedItemsChanged) {
-      yield currentState.withFeedItems(await _feedService.feedItems(_feedId));
+      yield await _getFeedItems(currentState);
     } else if (event is OnSyncStatusChanged) {
       yield currentState.withProgress(_feedService.isSync);
     } else if (event is OnSyncError) {
@@ -117,6 +133,22 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       if (feed != null) {
         _routerBloc.dispatch(OnBrowser(feed.siteUrl));
       }
+    } else if (event is OnSearchTapped) {
+      yield currentState.withSearch(true, "");
+    } else if (event is OnSearchTextEntered) {
+      yield currentState.withSearch(true, event.text);
+      yield await _getFeedItems(currentState);
+    } else if (event is OnSearchCloseTapped) {
+      yield currentState.withSearch(false, "");
+      yield await _getFeedItems(currentState);
     }
+  }
+
+  Future<FeedState> _getFeedItems(FeedState currentState) async {
+    final searchText = currentState.search && currentState.searchText.isNotEmpty
+        ? currentState.searchText
+        : null;
+    final feedItems = await _feedService.feedItems(_feedId, searchText);
+    return currentState.withFeedItems(feedItems);
   }
 }

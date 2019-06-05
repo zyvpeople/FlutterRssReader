@@ -89,10 +89,14 @@ class SqfliteFeedLocalRepository implements FeedLocalRepository {
   }
 
   @override
-  Future<List<Feed>> feeds() async {
+  Future<List<Feed>> feeds(String searchTextOrNull) async {
     final database = await _database;
-    final rows = await database.rawQuery(
-        "SELECT id, title, url, siteUrl, imageUrl FROM Feeds ORDER BY title ASC");
+    final select = "SELECT id, title, url, siteUrl, imageUrl FROM Feeds ";
+    final where = searchTextOrNull == null
+        ? ""
+        : "WHERE title LIKE '%${searchTextOrNull ?? ""}%' ";
+    final orderBy = "ORDER BY title ASC";
+    final rows = await database.rawQuery(select + where + orderBy);
     return rows.map(_rowToFeed).toList();
   }
 
@@ -100,7 +104,8 @@ class SqfliteFeedLocalRepository implements FeedLocalRepository {
   Future<Feed> findFeed(int id) async {
     final database = await _database;
     final rows = await database.rawQuery(
-        "SELECT id, title, url, siteUrl, imageUrl FROM Feeds WHERE id = ? LIMIT 1", [id]);
+        "SELECT id, title, url, siteUrl, imageUrl FROM Feeds WHERE id = ? LIMIT 1",
+        [id]);
     return rows.map(_rowToFeed).firstWhere((it) => true, orElse: () => null);
   }
 
@@ -132,13 +137,16 @@ class SqfliteFeedLocalRepository implements FeedLocalRepository {
       });
 
   @override
-  Future<List<FeedItem>> feedItems(int feedId) async {
+  Future<List<FeedItem>> feedItems(int feedId, String searchTextOrNull) async {
     final database = await _database;
-    final rows = await database.rawQuery(
-        """SELECT id, sid, title, summary, dateTime, url, imageUrl, feedId
-                      FROM FeedItems
-                      WHERE feedId = $feedId
-                      ORDER BY dateTime DESC""");
+    final select =
+        "SELECT id, sid, title, summary, dateTime, url, imageUrl, feedId FROM FeedItems ";
+    final whereFeedId = "WHERE feedId = $feedId ";
+    final whereSearchText =
+        searchTextOrNull == null ? "" : "AND title LIKE '%$searchTextOrNull%' ";
+    final where = whereFeedId + whereSearchText;
+    final orderBy = "ORDER BY dateTime DESC";
+    final rows = await database.rawQuery(select + where + orderBy);
     return rows.map(_rowToFeedItem).toList();
   }
 

@@ -8,12 +8,19 @@ import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
 class FeedsState {
   final List<Feed> feeds;
   final bool progress;
+  final bool search;
+  final String searchText;
 
-  FeedsState(this.feeds, this.progress);
+  FeedsState(this.feeds, this.progress, this.search, this.searchText);
 
-  FeedsState withFeeds(List<Feed> feeds) => FeedsState(feeds, progress);
+  FeedsState withFeeds(List<Feed> feeds) =>
+      FeedsState(feeds, progress, search, searchText);
 
-  FeedsState withProgress(bool progress) => FeedsState(feeds, progress);
+  FeedsState withProgress(bool progress) =>
+      FeedsState(feeds, progress, search, searchText);
+
+  FeedsState withSearch(bool search, String searchTextOrNull) =>
+      FeedsState(feeds, progress, search, searchTextOrNull);
 }
 
 abstract class FeedsEvent {}
@@ -44,6 +51,16 @@ class OnDeleteFeedItem extends FeedsEvent {
   OnDeleteFeedItem(this.feedId);
 }
 
+class OnSearchTapped extends FeedsEvent {}
+
+class OnSearchTextEntered extends FeedsEvent {
+  final String text;
+
+  OnSearchTextEntered(this.text);
+}
+
+class OnSearchCloseTapped extends FeedsEvent {}
+
 abstract class FeedsRouter {
   void onAddFeed();
 }
@@ -70,12 +87,11 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
   factory FeedsBloc(FeedService feedService, RouterBloc routerBloc) {
     final bloc = FeedsBloc._(feedService, routerBloc);
     bloc._subscriptions.add(feedService.feedsChanged
-        .asyncMap((_) => feedService.feeds())
         .listen((it) => bloc.dispatch(OnFeedsChanged())));
     bloc._subscriptions.add(feedService.syncStatusChanged
-        .listen((_) => {bloc.dispatch(OnSyncStatusChanged())}));
+        .listen((_) => bloc.dispatch(OnSyncStatusChanged())));
     bloc._subscriptions.add(feedService.syncException
-        .listen((it) => {bloc.dispatch(OnSyncError(it))}));
+        .listen((it) => bloc.dispatch(OnSyncError(it))));
     bloc.dispatch(OnFeedsChanged());
     bloc.dispatch(OnSyncStatusChanged());
     bloc.dispatch(OnRefresh());
@@ -91,7 +107,7 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
   }
 
   @override
-  FeedsState get initialState => FeedsState([], false);
+  FeedsState get initialState => FeedsState([], false, false, "");
 
   @override
   Stream<FeedsState> mapEventToState(FeedsEvent event) async* {
@@ -100,7 +116,7 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
     } else if (event is OnCreateFeedClicked) {
       _routerBloc.dispatch(OnAddFeed());
     } else if (event is OnFeedsChanged) {
-      yield currentState.withFeeds(await _feedService.feeds());
+      yield await _getFeeds(currentState);
     } else if (event is OnSyncStatusChanged) {
       yield currentState.withProgress(_feedService.isSync);
     } else if (event is OnSyncError) {
@@ -113,6 +129,22 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
       } catch (e) {
         _errorStreamController.sink.add("Error delete feed");
       }
+    } else if (event is OnSearchTapped) {
+      yield currentState.withSearch(true, "");
+    } else if (event is OnSearchTextEntered) {
+      yield currentState.withSearch(true, event.text);
+      yield await _getFeeds(currentState);
+    } else if (event is OnSearchCloseTapped) {
+      yield currentState.withSearch(false, "");
+      yield await _getFeeds(currentState);
     }
+  }
+
+  Future<FeedsState> _getFeeds(FeedsState currentState) async {
+    final searchText = currentState.search && currentState.searchText.isNotEmpty
+        ? currentState.searchText
+        : null;
+    final feeds = await _feedService.feeds(searchText);
+    return currentState.withFeeds(feeds);
   }
 }

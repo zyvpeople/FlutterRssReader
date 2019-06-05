@@ -26,6 +26,7 @@ class _State extends State<FeedPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
+  final _textEditingController = TextEditingController();
   final FeedBloc _feedBloc;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
   final WidgetFactory _widgetFactory;
@@ -52,8 +53,32 @@ class _State extends State<FeedPage> {
       builder: (context, state) => Scaffold(
           key: _scaffoldKey, appBar: _appBar(state), body: _body(state)));
 
-  Widget _appBar(FeedState state) =>
-      AppBar(title: Text(state.title), actions: <Widget>[
+  AppBar _appBar(FeedState state) =>
+      state.search ? _searchAppBar(state) : _noSearchAppBar();
+
+  AppBar _searchAppBar(FeedState state) =>
+      AppBar(title: _search(state.searchText), actions: <Widget>[
+        IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () => _feedBloc.dispatch(OnSearchCloseTapped()))
+      ]);
+
+  Widget _search(String text) {
+    if (_textEditingController.text != text) {
+      _textEditingController.text = text;
+    }
+    return TextField(
+        controller: _textEditingController,
+        keyboardType: TextInputType.text,
+        autofocus: true,
+        onChanged: (it) => _feedBloc.dispatch(OnSearchTextEntered(it)),
+        decoration: InputDecoration.collapsed(hintText: "Search"));
+  }
+
+  AppBar _noSearchAppBar() => AppBar(title: Text("Feeds"), actions: <Widget>[
+        IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () => _feedBloc.dispatch(OnSearchTapped())),
         IconButton(
             icon: Icon(Icons.open_in_browser),
             onPressed: () => _feedBloc.dispatch(OnOpenInBrowserTapped()))
@@ -90,9 +115,6 @@ class _State extends State<FeedPage> {
       height: 36,
       image: feedItem.imageUrl.toString(),
       placeholder: kTransparentImage);
-
-  Widget _imagePlaceholder() =>
-      Container(color: Colors.white, width: 36, height: 36);
 
   void _showError(String error) {
     _scaffoldKey.currentState

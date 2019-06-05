@@ -60,7 +60,7 @@ class FeedService {
     }
     _setIsSyncAndNotify(true);
     _feedLocalRepository
-        .feeds()
+        .feeds(null)
         .then((feeds) => Future.wait(feeds.map(_syncFeed)))
         .then(_onSuccessSyncAll)
         .catchError(_onErrorSyncAll);
@@ -111,7 +111,7 @@ class FeedService {
     try {
       final feedAndFeedItems = await _feedRemoteRepository.feed(feedUrl);
       return await _feedLocalRepository
-              .createOrUpdateFeed(feedAndFeedItems.value1);
+          .createOrUpdateFeed(feedAndFeedItems.value1);
     } catch (e) {
       _logger.e(this, "Error createFeed", e);
       throw e;
@@ -122,10 +122,11 @@ class FeedService {
 
   Future deleteFeed(int id) => _feedLocalRepository.deleteFeed(id);
 
-  Future<List<Feed>> feeds() => _feedLocalRepository.feeds();
+  Future<List<Feed>> feeds(String searchTextOrNull) =>
+      _feedLocalRepository.feeds(searchTextOrNull);
 
-  Future<List<FeedItem>> feedItems(int feedId) =>
-      _feedLocalRepository.feedItems(feedId);
+  Future<List<FeedItem>> feedItems(int feedId, String searchTextOrNull) =>
+      _feedLocalRepository.feedItems(feedId, searchTextOrNull);
 
   Future<FeedItem> findFeedItem(int id) =>
       _feedLocalRepository.findFeedItem(id);

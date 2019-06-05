@@ -26,6 +26,7 @@ class _FeedsState extends State<FeedsPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
+  final _textEditingController = TextEditingController();
   final FeedsBloc _feedsBloc;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
   final WidgetFactory _widgetFactory;
@@ -48,15 +49,42 @@ class _FeedsState extends State<FeedsPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-      key: _scaffoldKey,
-      appBar: _appBar(),
-      body: BlocBuilder<FeedsEvent, FeedsState>(
-          bloc: _feedsBloc,
-          builder: (BuildContext context, FeedsState state) => _body(state)),
-      floatingActionButton: _fab());
+  Widget build(BuildContext context) => BlocBuilder<FeedsEvent, FeedsState>(
+      bloc: _feedsBloc,
+      builder: (BuildContext context, FeedsState state) => Scaffold(
+          key: _scaffoldKey,
+          appBar: _appBar(state),
+          body: _body(state),
+          floatingActionButton: _fab()));
 
-  AppBar _appBar() => AppBar(title: Text("Feeds"));
+  AppBar _appBar(FeedsState state) =>
+      state.search ? _searchAppBar(state) : _noSearchAppBar();
+
+  AppBar _searchAppBar(FeedsState state) =>
+      AppBar(title: _search(state.searchText), actions: <Widget>[
+        IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () => _feedsBloc.dispatch(OnSearchCloseTapped()))
+      ]);
+
+  Widget _search(String text) {
+    if (_textEditingController.text != text) {
+      _textEditingController.text = text;
+    }
+    return TextField(
+        controller: _textEditingController,
+        keyboardType: TextInputType.text,
+        autofocus: true,
+        onChanged: (it) => _feedsBloc.dispatch(OnSearchTextEntered(it)),
+        decoration: InputDecoration.collapsed(hintText: "Search"));
+  }
+
+  AppBar _noSearchAppBar() =>
+      AppBar(title: Text("Feeds"), actions: <Widget>[
+        IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () => _feedsBloc.dispatch(OnSearchTapped()))
+      ]);
 
   Widget _body(FeedsState state) {
     if (state.progress) {
@@ -94,9 +122,6 @@ class _FeedsState extends State<FeedsPage> {
       height: 36,
       image: feed.imageUrl.toString(),
       placeholder: kTransparentImage);
-
-  Widget _imagePlaceholder() =>
-      Container(color: Colors.white, width: 36, height: 36);
 
   Widget _fab() => FloatingActionButton(
       child: Icon(Icons.add),
