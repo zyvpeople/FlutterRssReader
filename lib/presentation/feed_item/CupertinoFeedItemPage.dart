@@ -47,7 +47,7 @@ class _State extends State<CupertinoFeedItemPage> {
   Widget _navigationBar() => CupertinoNavigationBar(
       middle: Text("Feed item"),
       trailing: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-        CupertinoIconButton(Icon(CupertinoIcons.info),
+        CupertinoIconButton(Icon(CupertinoIcons.book),
             () => _feedItemBloc.dispatch(OnOpenInBrowserTapped())),
         CupertinoIconButton(Icon(CupertinoIcons.share),
             () => _feedItemBloc.dispatch(OnShareTapped()))

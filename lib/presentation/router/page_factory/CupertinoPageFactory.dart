@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_rss_reader/presentation/add_feed/CupertinoAddFeedPage.dart';
+import 'package:flutter_rss_reader/presentation/browser/CupertinoBrowserPage.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed/CupertinoFeedPage.dart';
 import 'package:flutter_rss_reader/presentation/feed_item/CupertinoFeedItemPage.dart';
@@ -27,6 +28,5 @@ class CupertinoPageFactory implements PageFactory {
   Widget feedItemPage(int feedItemId) => CupertinoFeedItemPage(
       _blocFactory.feedItemBlocFactory(feedItemId), _widgetFactory);
 
-  Widget browserPage(Uri url) => null;
-//      BrowserPage(url);
+  Widget browserPage(Uri url) => CupertinoBrowserPage(url);
 }

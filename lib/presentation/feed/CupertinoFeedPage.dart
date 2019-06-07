@@ -80,7 +80,7 @@ class _State extends State<CupertinoFeedPage> {
         CupertinoIconButton(Icon(CupertinoIcons.search),
             () => _feedBloc.dispatch(OnSearchTapped())),
         //TODO: icon
-        CupertinoIconButton(Icon(CupertinoIcons.info),
+        CupertinoIconButton(Icon(CupertinoIcons.book),
             () => _feedBloc.dispatch(OnOpenInBrowserTapped()))
       ]));
 
