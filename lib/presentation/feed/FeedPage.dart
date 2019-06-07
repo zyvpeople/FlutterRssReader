@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rss_reader/domain/entity/FeedItem.dart';
-import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
+import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed/FeedBloc.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatus.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
@@ -12,7 +12,7 @@ import 'package:transparent_image/transparent_image.dart';
 class FeedPage extends StatefulWidget {
   final FeedBlocFactory _feedBlocFactory;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
-  final WidgetFactory _widgetFactory;
+  final MaterialWidgetFactory _widgetFactory;
 
   FeedPage(this._feedBlocFactory, this._onlineStatusBlocFactory,
       this._widgetFactory);
@@ -29,7 +29,7 @@ class _State extends State<FeedPage> {
   final _textEditingController = TextEditingController();
   final FeedBloc _feedBloc;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
-  final WidgetFactory _widgetFactory;
+  final MaterialWidgetFactory _widgetFactory;
   StreamSubscription _errorSubscription;
 
   _State(this._feedBloc, this._onlineStatusBlocFactory, this._widgetFactory);

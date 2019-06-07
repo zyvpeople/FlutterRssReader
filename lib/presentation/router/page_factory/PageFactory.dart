@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_rss_reader/presentation/add_feed/AddFeedPage.dart';
 import 'package:flutter_rss_reader/presentation/browser/BrowserPage.dart';
-import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
+import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed/FeedPage.dart';
 import 'package:flutter_rss_reader/presentation/feed_item/FeedItemPage.dart';
 import 'package:flutter_rss_reader/presentation/feeds/FeedsPage.dart';
@@ -9,7 +9,7 @@ import 'package:flutter_rss_reader/presentation/router/bloc_factory/BlocFactory.
 
 class PageFactory {
   final BlocFactory _blocFactory;
-  final WidgetFactory _widgetFactory;
+  final MaterialWidgetFactory _widgetFactory;
 
   PageFactory(this._blocFactory, this._widgetFactory);
 

@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-class RouteFactory {
-  Route create(Widget pageBuilder()) =>
-      MaterialPageRoute(builder: (_) => pageBuilder());
+abstract class RouteFactory {
+  Route create(Widget pageBuilder());
 }

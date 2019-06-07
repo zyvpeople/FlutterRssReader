@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rss_reader/presentation/add_feed/AddFeedBloc.dart';
-import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
+import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 
 class AddFeedPage extends StatefulWidget {
   final AddFeedBlocFactory _addFeedBlocFactory;
-  final WidgetFactory _widgetFactory;
+  final MaterialWidgetFactory _widgetFactory;
 
   AddFeedPage(this._addFeedBlocFactory, this._widgetFactory);
 
@@ -19,7 +19,7 @@ class _State extends State<AddFeedPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final textEditingController = TextEditingController();
   final AddFeedBloc _addFeedBloc;
-  final WidgetFactory _widgetFactory;
+  final MaterialWidgetFactory _widgetFactory;
   StreamSubscription _errorSubscription;
 
   _State(this._addFeedBloc, this._widgetFactory);

@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
+import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed_item/FeedItemBloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class FeedItemPage extends StatefulWidget {
   final FeedItemBlocFactory _feedItemBlocFactory;
-  final WidgetFactory _widgetFactory;
+  final MaterialWidgetFactory _widgetFactory;
 
   FeedItemPage(this._feedItemBlocFactory, this._widgetFactory);
 
@@ -19,7 +19,7 @@ class FeedItemPage extends StatefulWidget {
 class _State extends State<FeedItemPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FeedItemBloc _feedItemBloc;
-  final WidgetFactory _widgetFactory;
+  final MaterialWidgetFactory _widgetFactory;
   StreamSubscription _errorSubscription;
 
   _State(this._feedItemBloc, this._widgetFactory);

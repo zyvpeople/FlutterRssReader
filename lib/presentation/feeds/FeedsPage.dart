@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rss_reader/domain/entity/Feed.dart';
-import 'package:flutter_rss_reader/presentation/common/WidgetFactory.dart';
+import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feeds/FeedsBloc.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatus.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
@@ -12,27 +12,27 @@ import 'package:transparent_image/transparent_image.dart';
 class FeedsPage extends StatefulWidget {
   final FeedsBlocFactory _feedsBlocFactory;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
-  final WidgetFactory _widgetFactory;
+  final MaterialWidgetFactory _widgetFactory;
 
   FeedsPage(this._feedsBlocFactory, this._onlineStatusBlocFactory,
       this._widgetFactory);
 
   @override
-  State createState() => _FeedsState(
+  State createState() => _State(
       _feedsBlocFactory.create(), _onlineStatusBlocFactory, _widgetFactory);
 }
 
-class _FeedsState extends State<FeedsPage> {
+class _State extends State<FeedsPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  final  _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
   final _textEditingController = TextEditingController();
   final FeedsBloc _feedsBloc;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
-  final WidgetFactory _widgetFactory;
+  final MaterialWidgetFactory _widgetFactory;
   StreamSubscription _errorSubscription;
 
-  _FeedsState(
+  _State(
       this._feedsBloc, this._onlineStatusBlocFactory, this._widgetFactory);
 
   @override
@@ -100,9 +100,7 @@ class _FeedsState extends State<FeedsPage> {
                   itemCount: state.feeds.length,
                   itemBuilder: (BuildContext context, int index) =>
                       _listItem(state.feeds[index])),
-              onRefresh: () async {
-                _feedsBloc.dispatch(OnRefresh());
-              }),
+              onRefresh: () async => _feedsBloc.dispatch(OnRefresh())),
         ),
       ],
     );
