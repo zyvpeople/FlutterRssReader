@@ -9,12 +9,12 @@ import 'package:flutter_rss_reader/presentation/online_status/OnlineStatus.dart'
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-class FeedsPage extends StatefulWidget {
+class MaterialFeedsPage extends StatefulWidget {
   final FeedsBlocFactory _feedsBlocFactory;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
   final MaterialWidgetFactory _widgetFactory;
 
-  FeedsPage(this._feedsBlocFactory, this._onlineStatusBlocFactory,
+  MaterialFeedsPage(this._feedsBlocFactory, this._onlineStatusBlocFactory,
       this._widgetFactory);
 
   @override
@@ -22,7 +22,7 @@ class FeedsPage extends StatefulWidget {
       _feedsBlocFactory.create(), _onlineStatusBlocFactory, _widgetFactory);
 }
 
-class _State extends State<FeedsPage> {
+class _State extends State<MaterialFeedsPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final  _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();

@@ -12,17 +12,16 @@ import 'package:flutter_rss_reader/presentation/cupertino/CupertinoWidgetFactory
 import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/PhoneRouter.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
-import 'package:flutter_rss_reader/presentation/router/app_factory/CupertinoAppFactory.dart';
-import 'package:flutter_rss_reader/presentation/router/app_factory/MaterialAppFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/bloc_factory/BlocFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/page_factory/CupertinoPageFactory.dart';
-import 'package:flutter_rss_reader/presentation/router/page_factory/PageFactory.dart';
-import 'package:flutter_rss_reader/presentation/router/route_factory/CupertinoRouteFactory.dart' as cupertinoRouteFactory;
-import 'package:flutter_rss_reader/presentation/router/route_factory/MaterialRouteFactory.dart' as materialRouteFactory;
+import 'package:flutter_rss_reader/presentation/router/page_factory/MaterialPageFactory.dart';
+import 'package:flutter_rss_reader/presentation/router/route_factory/CupertinoRouteFactory.dart'
+    as cupertinoRouteFactory;
+import 'package:flutter_rss_reader/presentation/router/route_factory/MaterialRouteFactory.dart'
+    as materialRouteFactory;
 
 //TODO: add i18n
 //TODO: add tablet mode
-//TODO: add cupertino pages
 
 final _logger = Logger(LogFormatter(), LogWriter());
 final _feedRemoteRepository = FeedRemoteRepository(HttpClient(), FeedParser());
@@ -35,9 +34,9 @@ final _routerBloc = RouterBloc();
 final _routeFactory = cupertinoRouteFactory.CupertinoRouteFactory();
 final _blocFactory = BlocFactory(_feedService, _networkService, _routerBloc);
 //final _pageFactory = PageFactory(_blocFactory, WidgetFactory());
-final _pageFactory = CupertinoPageFactory(_blocFactory, CupertinoWidgetFactory());
+final _pageFactory =
+    CupertinoPageFactory(_blocFactory, CupertinoWidgetFactory());
 //final _appFactory = MaterialAppFactory();
-final _appFactory = CupertinoAppFactory();
 
-void main() => runApp(_appFactory.create(
+void main() => runApp(_pageFactory.createApp(
     "Rss reader", PhoneRouter(_routerBloc, _routeFactory, _pageFactory)));

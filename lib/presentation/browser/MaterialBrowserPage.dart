@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class BrowserPage extends StatelessWidget {
+class MaterialBrowserPage extends StatelessWidget {
   final Uri _url;
 
-  BrowserPage(this._url);
+  MaterialBrowserPage(this._url);
 
   @override
   Widget build(BuildContext context) =>

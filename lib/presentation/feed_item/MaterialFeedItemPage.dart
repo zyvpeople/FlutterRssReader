@@ -6,17 +6,17 @@ import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.d
 import 'package:flutter_rss_reader/presentation/feed_item/FeedItemBloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-class FeedItemPage extends StatefulWidget {
+class MaterialFeedItemPage extends StatefulWidget {
   final FeedItemBlocFactory _feedItemBlocFactory;
   final MaterialWidgetFactory _widgetFactory;
 
-  FeedItemPage(this._feedItemBlocFactory, this._widgetFactory);
+  MaterialFeedItemPage(this._feedItemBlocFactory, this._widgetFactory);
 
   @override
   State createState() => _State(_feedItemBlocFactory.create(), _widgetFactory);
 }
 
-class _State extends State<FeedItemPage> {
+class _State extends State<MaterialFeedItemPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FeedItemBloc _feedItemBloc;
   final MaterialWidgetFactory _widgetFactory;

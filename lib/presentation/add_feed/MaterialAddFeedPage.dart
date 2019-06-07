@@ -5,17 +5,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rss_reader/presentation/add_feed/AddFeedBloc.dart';
 import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 
-class AddFeedPage extends StatefulWidget {
+class MaterialAddFeedPage extends StatefulWidget {
   final AddFeedBlocFactory _addFeedBlocFactory;
   final MaterialWidgetFactory _widgetFactory;
 
-  AddFeedPage(this._addFeedBlocFactory, this._widgetFactory);
+  MaterialAddFeedPage(this._addFeedBlocFactory, this._widgetFactory);
 
   @override
   State createState() => _State(_addFeedBlocFactory.create(), _widgetFactory);
 }
 
-class _State extends State<AddFeedPage> {
+class _State extends State<MaterialAddFeedPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _textEditingController = TextEditingController();
   final AddFeedBloc _addFeedBloc;

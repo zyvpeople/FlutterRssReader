@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
 import 'package:flutter_rss_reader/presentation/router/page_factory/PageFactory.dart';
-import 'package:share/share.dart';
 import 'package:flutter_rss_reader/presentation/router/route_factory/RouteFactory.dart'
     as routeFactory;
+import 'package:share/share.dart';
 
 class PhoneRouter extends StatefulWidget {
   final RouterBloc _routerBloc;

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_rss_reader/presentation/add_feed/CupertinoAddFeedPage.dart';
 import 'package:flutter_rss_reader/presentation/browser/CupertinoBrowserPage.dart';
@@ -14,19 +15,28 @@ class CupertinoPageFactory implements PageFactory {
 
   CupertinoPageFactory(this._blocFactory, this._widgetFactory);
 
+  @override
+  Widget createApp(String title, Widget home) =>
+      CupertinoApp(title: title, home: home);
+
+  @override
   Widget feedsPage() =>
       CupertinoFeedsPage(_blocFactory.feedsBlocFactory(), _widgetFactory);
 
+  @override
   Widget addFeedPage() =>
       CupertinoAddFeedPage(_blocFactory.addFeedBlocFactory(), _widgetFactory);
 
+  @override
   Widget feedPage(int feedId) => CupertinoFeedPage(
       _blocFactory.feedBlocFactory(feedId),
       _blocFactory.onlineStatusBlocFactory(),
       _widgetFactory);
 
+  @override
   Widget feedItemPage(int feedItemId) => CupertinoFeedItemPage(
       _blocFactory.feedItemBlocFactory(feedItemId), _widgetFactory);
 
+  @override
   Widget browserPage(Uri url) => CupertinoBrowserPage(url);
 }
