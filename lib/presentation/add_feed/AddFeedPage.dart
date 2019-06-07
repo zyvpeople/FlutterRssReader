@@ -17,7 +17,7 @@ class AddFeedPage extends StatefulWidget {
 
 class _State extends State<AddFeedPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final textEditingController = TextEditingController();
+  final _textEditingController = TextEditingController();
   final AddFeedBloc _addFeedBloc;
   final MaterialWidgetFactory _widgetFactory;
   StreamSubscription _errorSubscription;
@@ -50,7 +50,7 @@ class _State extends State<AddFeedPage> {
 
   Widget _body(AddFeedState state) {
     final textField = TextField(
-        controller: textEditingController,
+        controller: _textEditingController,
         decoration: InputDecoration(
             labelText: "Feed URL", errorText: state.urlIsIncorrectErrorOrNull),
         keyboardType: TextInputType.url,
