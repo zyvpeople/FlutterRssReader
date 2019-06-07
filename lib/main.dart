@@ -1,42 +1,36 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_rss_reader/datasource/local/SqfliteFeedLocalRepository.dart';
-import 'package:flutter_rss_reader/datasource/logger/LogFormatter.dart';
-import 'package:flutter_rss_reader/datasource/logger/LogWriter.dart';
-import 'package:flutter_rss_reader/datasource/logger/Logger.dart';
-import 'package:flutter_rss_reader/datasource/remote/FeedParser.dart';
-import 'package:flutter_rss_reader/datasource/remote/FeedRemoteRepository.dart';
-import 'package:flutter_rss_reader/datasource/remote/HttpClient.dart';
-import 'package:flutter_rss_reader/domain/service/FeedService.dart';
-import 'package:flutter_rss_reader/domain/service/NetworkService.dart';
-import 'package:flutter_rss_reader/presentation/cupertino/CupertinoWidgetFactory.dart';
-import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
+import 'dart:io';
+
+import 'package:flutter/widgets.dart';
+import 'package:flutter_rss_reader/application/CupertinoPresentationFactory.dart';
+import 'package:flutter_rss_reader/application/DatasourceFactory.dart';
+import 'package:flutter_rss_reader/application/DomainFactory.dart';
+import 'package:flutter_rss_reader/application/MaterialPresentationFactory.dart';
+import 'package:flutter_rss_reader/application/PresentationFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/PhoneRouter.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
-import 'package:flutter_rss_reader/presentation/router/bloc_factory/BlocFactory.dart';
-import 'package:flutter_rss_reader/presentation/router/page_factory/CupertinoPageFactory.dart';
-import 'package:flutter_rss_reader/presentation/router/page_factory/MaterialPageFactory.dart';
-import 'package:flutter_rss_reader/presentation/router/route_factory/CupertinoRouteFactory.dart'
-    as cupertinoRouteFactory;
-import 'package:flutter_rss_reader/presentation/router/route_factory/MaterialRouteFactory.dart'
-    as materialRouteFactory;
 
 //TODO: add i18n
 //TODO: add tablet mode
 
-final _logger = Logger(LogFormatter(), LogWriter());
-final _feedRemoteRepository = FeedRemoteRepository(HttpClient(), FeedParser());
-final _feedLocalRepository = SqfliteFeedLocalRepository();
-final _networkService = NetworkService();
-final _feedService = FeedService(
-    _feedRemoteRepository, _feedLocalRepository, _networkService, _logger);
-final _routerBloc = RouterBloc();
-//final _routeFactory = materialRouteFactory.MaterialRouteFactory();
-final _routeFactory = cupertinoRouteFactory.CupertinoRouteFactory();
-final _blocFactory = BlocFactory(_feedService, _networkService, _routerBloc);
-//final _pageFactory = PageFactory(_blocFactory, WidgetFactory());
-final _pageFactory =
-    CupertinoPageFactory(_blocFactory, CupertinoWidgetFactory());
-//final _appFactory = MaterialAppFactory();
+void main() {
+  var datasourceFactory = DatasourceFactory();
+  final domainFactory = DomainFactory(datasourceFactory);
+  final routerBloc = RouterBloc();
+  final presentationFactory =
+      createPresentationFactory(routerBloc, domainFactory);
+  runApp(presentationFactory.createApplicationFactory().create(
+      "Rss reader",
+      PhoneRouter(routerBloc, presentationFactory.createRouteFactory(),
+          presentationFactory.createPageFactory())));
+}
 
-void main() => runApp(_pageFactory.createApp(
-    "Rss reader", PhoneRouter(_routerBloc, _routeFactory, _pageFactory)));
+PresentationFactory createPresentationFactory(
+    RouterBloc routerBloc, DomainFactory domainFactory) {
+  if (Platform.isAndroid) {
+    return MaterialPresentationFactory(routerBloc, domainFactory);
+  } else if (Platform.isIOS) {
+    return CupertinoPresentationFactory(routerBloc, domainFactory);
+  } else {
+    throw Exception("Unsupported platform");
+  }
+}

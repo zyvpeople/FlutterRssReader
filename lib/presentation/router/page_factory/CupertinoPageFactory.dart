@@ -16,10 +16,6 @@ class CupertinoPageFactory implements PageFactory {
   CupertinoPageFactory(this._blocFactory, this._widgetFactory);
 
   @override
-  Widget createApp(String title, Widget home) =>
-      CupertinoApp(title: title, home: home);
-
-  @override
   Widget feedsPage() =>
       CupertinoFeedsPage(_blocFactory.feedsBlocFactory(), _widgetFactory);
 

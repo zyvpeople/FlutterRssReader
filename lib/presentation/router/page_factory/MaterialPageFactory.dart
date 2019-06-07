@@ -16,10 +16,6 @@ class MaterialPageFactory implements PageFactory {
   MaterialPageFactory(this._blocFactory, this._widgetFactory);
 
   @override
-  Widget createApp(String title, Widget home) =>
-      MaterialApp(title: title, home: home);
-
-  @override
   Widget feedsPage() => MaterialFeedsPage(_blocFactory.feedsBlocFactory(),
       _blocFactory.onlineStatusBlocFactory(), _widgetFactory);
 
