@@ -3,10 +3,12 @@ import 'package:transparent_image/transparent_image.dart';
 
 class CupertinoListTile extends StatelessWidget {
   final String _title;
+  final int _titleMaxLines;
   final Uri _imageUrl;
   final GestureTapCallback _onTap;
 
-  CupertinoListTile(this._title, this._imageUrl, this._onTap);
+  CupertinoListTile(
+      this._title, this._titleMaxLines, this._imageUrl, this._onTap);
 
   @override
   Widget build(BuildContext context) => SafeArea(
@@ -35,6 +37,8 @@ class CupertinoListTile extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         _title,
+                        maxLines: _titleMaxLines,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Color.fromRGBO(0, 0, 0, 0.8),
                           fontSize: 18,

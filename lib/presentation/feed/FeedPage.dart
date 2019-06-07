@@ -75,7 +75,7 @@ class _State extends State<FeedPage> {
         decoration: InputDecoration.collapsed(hintText: "Search"));
   }
 
-  AppBar _noSearchAppBar() => AppBar(title: Text("Feeds"), actions: <Widget>[
+  AppBar _noSearchAppBar() => AppBar(title: Text("Feed items"), actions: <Widget>[
         IconButton(
             icon: Icon(Icons.search),
             onPressed: () => _feedBloc.dispatch(OnSearchTapped())),

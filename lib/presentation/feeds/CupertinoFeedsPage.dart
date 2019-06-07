@@ -47,8 +47,7 @@ class _State extends State<CupertinoFeedsPage> {
       bloc: _feedsBloc,
       builder: (BuildContext context, FeedsState state) =>
           CupertinoPageScaffold(
-              navigationBar: _navigationBar(state),
-              child: _body(context, state)));
+              navigationBar: _navigationBar(state), child: _body(state)));
 
   Widget _navigationBar(FeedsState state) =>
       state.search ? _searchNavigationBar(state) : _noSearchNavigationBar();
@@ -80,14 +79,14 @@ class _State extends State<CupertinoFeedsPage> {
             () => _feedsBloc.dispatch(OnCreateFeedClicked()))
       ]));
 
-  Widget _body(BuildContext context, FeedsState state) {
+  Widget _body(FeedsState state) {
     return SafeArea(
         child: CustomScrollView(slivers: <Widget>[
       CupertinoSliverRefreshControl(
           onRefresh: () async => _feedsBloc.dispatch(OnRefresh())),
       CupertinoSliverListView(state.feeds.length, (context, index) {
         final feed = state.feeds[index];
-        return CupertinoListTile(feed.title, feed.imageUrl,
+        return CupertinoListTile(feed.title, 1, feed.imageUrl,
             () => _feedsBloc.dispatch(OnFeedTapped(feed.id)));
       })
     ]));
