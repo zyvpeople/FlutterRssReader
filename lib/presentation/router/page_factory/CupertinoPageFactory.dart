@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_rss_reader/presentation/add_feed/CupertinoAddFeedPage.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed/CupertinoFeedPage.dart';
+import 'package:flutter_rss_reader/presentation/feed_item/CupertinoFeedItemPage.dart';
 import 'package:flutter_rss_reader/presentation/feeds/CupertinoFeedsPage.dart';
 import 'package:flutter_rss_reader/presentation/router/bloc_factory/BlocFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/page_factory/PageFactory.dart';
@@ -23,10 +24,8 @@ class CupertinoPageFactory implements PageFactory {
       _blocFactory.onlineStatusBlocFactory(),
       _widgetFactory);
 
-  Widget feedItemPage(int feedItemId) => null;
-
-//      FeedItemPage(
-//      _blocFactory.feedItemBlocFactory(feedItemId), _widgetFactory);
+  Widget feedItemPage(int feedItemId) => CupertinoFeedItemPage(
+      _blocFactory.feedItemBlocFactory(feedItemId), _widgetFactory);
 
   Widget browserPage(Uri url) => null;
 //      BrowserPage(url);
