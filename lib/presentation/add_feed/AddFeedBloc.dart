@@ -18,14 +18,14 @@ class OnAddFeed extends AddFeedEvent {}
 class AddFeedState {
   final bool progress;
   final String url;
-  final String urlIsIncorrectErrorOrNull;
+  final bool urlIsCorrect;
 
   bool get editable => !progress;
 
-  AddFeedState(this.progress, this.url, this.urlIsIncorrectErrorOrNull);
+  AddFeedState(this.progress, this.url, this.urlIsCorrect);
 
   AddFeedState withProgress(bool progress) =>
-      AddFeedState(progress, url, urlIsIncorrectErrorOrNull);
+      AddFeedState(progress, url, urlIsCorrect);
 }
 
 class AddFeedBlocFactory {
@@ -38,32 +38,31 @@ class AddFeedBlocFactory {
 }
 
 class AddFeedBloc extends Bloc<AddFeedEvent, AddFeedState> {
-  final _errorStreamController = StreamController<String>.broadcast();
+  final _createFeedErrorStreamController = StreamController<String>.broadcast();
   final FeedService _feedService;
   final router.RouterBloc _routerBloc;
 
-  Stream<String> get errorStream => _errorStreamController.stream;
+  Stream get createFeedErrorStream => _createFeedErrorStreamController.stream;
 
   AddFeedBloc(this._feedService, this._routerBloc);
 
   @override
   void dispose() {
-    _errorStreamController.close();
+    _createFeedErrorStreamController.close();
     super.dispose();
   }
 
   @override
-  AddFeedState get initialState => AddFeedState(false, "", null);
+  AddFeedState get initialState => AddFeedState(false, "", true);
 
   @override
   Stream<AddFeedState> mapEventToState(AddFeedEvent event) async* {
     if (event is OnUrlChanged) {
       try {
         final url = Uri.parse(event.url);
-        yield AddFeedState(currentState.progress, url.toString(), null);
+        yield AddFeedState(currentState.progress, url.toString(), true);
       } catch (e) {
-        yield AddFeedState(
-            currentState.progress, event.url, "Url is not correct");
+        yield AddFeedState(currentState.progress, event.url, false);
       }
     } else if (event is OnAddFeed) {
       try {
@@ -74,7 +73,7 @@ class AddFeedBloc extends Bloc<AddFeedEvent, AddFeedState> {
         _routerBloc.dispatch(router.OnBack());
       } catch (e) {
         yield currentState.withProgress(false);
-        _errorStreamController.sink.add("Error create feed");
+        _createFeedErrorStreamController.sink.add(null);
       }
     }
   }

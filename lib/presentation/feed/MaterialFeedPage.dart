@@ -1,10 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rss_reader/domain/common/CompositeStreamSubscription.dart';
 import 'package:flutter_rss_reader/domain/entity/FeedItem.dart';
-import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed/FeedBloc.dart';
+import 'package:flutter_rss_reader/presentation/localization/Localization.dart';
+import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatus.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -30,20 +30,22 @@ class _State extends State<MaterialFeedPage> {
   final FeedBloc _feedBloc;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
   final MaterialWidgetFactory _widgetFactory;
-  StreamSubscription _errorSubscription;
+  final _subscription = CompositeStreamSubscription();
 
   _State(this._feedBloc, this._onlineStatusBlocFactory, this._widgetFactory);
 
   @override
   void initState() {
     super.initState();
-    _errorSubscription = _feedBloc.errorStream.listen(_showError);
+    _subscription.add(_feedBloc.syncErrorStream
+        .map((_) => Localization.of(context).errorSync)
+        .listen(_showError));
   }
 
   @override
   void dispose() {
     _feedBloc.dispose();
-    _errorSubscription.cancel();
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -72,10 +74,11 @@ class _State extends State<MaterialFeedPage> {
         keyboardType: TextInputType.text,
         autofocus: true,
         onChanged: (it) => _feedBloc.dispatch(OnSearchTextEntered(it)),
-        decoration: InputDecoration.collapsed(hintText: "Search"));
+        decoration: InputDecoration.collapsed(hintText: Localization.of(context).searchHint));
   }
 
-  AppBar _noSearchAppBar() => AppBar(title: Text("Feed items"), actions: <Widget>[
+  AppBar _noSearchAppBar() =>
+      AppBar(title: Text(Localization.of(context).feedTitle), actions: <Widget>[
         IconButton(
             icon: Icon(Icons.search),
             onPressed: () => _feedBloc.dispatch(OnSearchTapped())),

@@ -48,9 +48,11 @@ class FeedItemBlocFactory {
 
 class FeedItemBloc extends Bloc<FeedItemEvent, FeedItemState> {
   final RouterBloc _routerBloc;
-  final _errorStreamController = StreamController<String>.broadcast();
+  final _feedItemDoesNotExistErrorStreamController = StreamController.broadcast();
+  final _loadFeedItemErrorStreamController = StreamController.broadcast();
 
-  Stream<String> get errorStream => _errorStreamController.stream;
+  Stream get feedItemDoesNotExistErrorStream => _feedItemDoesNotExistErrorStreamController.stream;
+  Stream get loadFeedItemErrorStream => _loadFeedItemErrorStreamController.stream;
 
   FeedItemBloc._(this._routerBloc);
 
@@ -67,7 +69,8 @@ class FeedItemBloc extends Bloc<FeedItemEvent, FeedItemState> {
 
   @override
   void dispose() {
-    _errorStreamController.close();
+    _feedItemDoesNotExistErrorStreamController.close();
+    _loadFeedItemErrorStreamController.close();
     super.dispose();
   }
 
@@ -84,9 +87,9 @@ class FeedItemBloc extends Bloc<FeedItemEvent, FeedItemState> {
           event.feedItem.dateTime.toIso8601String(),
           event.feedItem.imageUrl.toString());
     } else if (event is OnFeedItemNotFound) {
-      _errorStreamController.sink.add("Feed item does not exist");
+      _feedItemDoesNotExistErrorStreamController.sink.add(null);
     } else if (event is OnErrorLoadFeedItem) {
-      _errorStreamController.sink.add("Error load feed item");
+      _loadFeedItemErrorStreamController.sink.add(null);
     } else if (event is OnOpenInBrowserTapped) {
       final feedItem = currentState.feedItemOrNull;
       if (feedItem != null) {

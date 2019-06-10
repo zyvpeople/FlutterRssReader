@@ -1,10 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rss_reader/domain/common/CompositeStreamSubscription.dart';
 import 'package:flutter_rss_reader/domain/entity/Feed.dart';
-import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feeds/FeedsBloc.dart';
+import 'package:flutter_rss_reader/presentation/localization/Localization.dart';
+import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatus.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -24,27 +24,30 @@ class MaterialFeedsPage extends StatefulWidget {
 
 class _State extends State<MaterialFeedsPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final  _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
   final _textEditingController = TextEditingController();
   final FeedsBloc _feedsBloc;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
   final MaterialWidgetFactory _widgetFactory;
-  StreamSubscription _errorSubscription;
+  final _subscription = CompositeStreamSubscription();
 
-  _State(
-      this._feedsBloc, this._onlineStatusBlocFactory, this._widgetFactory);
+  _State(this._feedsBloc, this._onlineStatusBlocFactory, this._widgetFactory);
 
   @override
   void initState() {
     super.initState();
-    _errorSubscription = _feedsBloc.errorStream.listen(_showError);
+    _subscription.add(_feedsBloc.syncFeedsErrorStream
+        .map((_) => Localization.of(context).errorSync)
+        .listen(_showError));
+    _subscription.add(_feedsBloc.deleteFeedErrorStream
+        .map((_) => Localization.of(context).errorDeleteFeed)
+        .listen(_showError));
   }
 
   @override
   void dispose() {
     _feedsBloc.dispose();
-    _errorSubscription.cancel();
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -76,15 +79,17 @@ class _State extends State<MaterialFeedsPage> {
         keyboardType: TextInputType.text,
         autofocus: true,
         onChanged: (it) => _feedsBloc.dispatch(OnSearchTextEntered(it)),
-        decoration: InputDecoration.collapsed(hintText: "Search"));
+        decoration: InputDecoration.collapsed(
+            hintText: Localization.of(context).searchHint));
   }
 
-  AppBar _noSearchAppBar() =>
-      AppBar(title: Text("Feeds"), actions: <Widget>[
-        IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () => _feedsBloc.dispatch(OnSearchTapped()))
-      ]);
+  AppBar _noSearchAppBar() => AppBar(
+          title: Text(Localization.of(context).feedsTitle),
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () => _feedsBloc.dispatch(OnSearchTapped()))
+          ]);
 
   Widget _body(FeedsState state) {
     if (state.progress) {

@@ -1,8 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rss_reader/domain/common/CompositeStreamSubscription.dart';
 import 'package:flutter_rss_reader/presentation/add_feed/AddFeedBloc.dart';
+import 'package:flutter_rss_reader/presentation/localization/Localization.dart';
 import 'package:flutter_rss_reader/presentation/material/MaterialWidgetFactory.dart';
 
 class MaterialAddFeedPage extends StatefulWidget {
@@ -20,20 +20,22 @@ class _State extends State<MaterialAddFeedPage> {
   final _textEditingController = TextEditingController();
   final AddFeedBloc _addFeedBloc;
   final MaterialWidgetFactory _widgetFactory;
-  StreamSubscription _errorSubscription;
+  final _subscription = CompositeStreamSubscription();
 
   _State(this._addFeedBloc, this._widgetFactory);
 
   @override
   void initState() {
     super.initState();
-    _errorSubscription = _addFeedBloc.errorStream.listen(_showError);
+    _subscription.add(_addFeedBloc.createFeedErrorStream
+        .map((_) => Localization.of(context).errorCreateFeed)
+        .listen(_showError));
   }
 
   @override
   void dispose() {
     _addFeedBloc.dispose();
-    _errorSubscription.cancel();
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -46,13 +48,17 @@ class _State extends State<MaterialAddFeedPage> {
           body: _body(state),
           floatingActionButton: _fab(state)));
 
-  Widget _appBar() => AppBar(title: Text("Add feed"));
+  Widget _appBar() =>
+      AppBar(title: Text(Localization.of(context).addFeedTitle));
 
   Widget _body(AddFeedState state) {
     final textField = TextField(
         controller: _textEditingController,
         decoration: InputDecoration(
-            labelText: "Feed URL", errorText: state.urlIsIncorrectErrorOrNull),
+            labelText: Localization.of(context).feedUrlHint,
+            errorText: state.urlIsCorrect
+                ? null
+                : Localization.of(context).urlIsNotCorrect),
         keyboardType: TextInputType.url,
         enabled: state.editable,
         onChanged: (it) => _addFeedBloc.dispatch(OnUrlChanged(it)),
@@ -72,6 +78,7 @@ class _State extends State<MaterialAddFeedPage> {
           state.progress ? null : () => _addFeedBloc.dispatch(OnAddFeed()));
 
   void _showError(String error) {
-    _scaffoldKey.currentState.showSnackBar(_widgetFactory.createSnackBar(error));
+    _scaffoldKey.currentState
+        .showSnackBar(_widgetFactory.createSnackBar(error));
   }
 }

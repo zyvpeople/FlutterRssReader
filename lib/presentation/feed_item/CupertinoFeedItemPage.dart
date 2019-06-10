@@ -1,11 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rss_reader/domain/common/CompositeStreamSubscription.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoIconButton.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed_item/FeedItemBloc.dart';
+import 'package:flutter_rss_reader/presentation/localization/Localization.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class CupertinoFeedItemPage extends StatefulWidget {
@@ -21,20 +21,25 @@ class CupertinoFeedItemPage extends StatefulWidget {
 class _State extends State<CupertinoFeedItemPage> {
   final FeedItemBloc _feedItemBloc;
   final CupertinoWidgetFactory _widgetFactory;
-  StreamSubscription _errorSubscription;
+  final _subscription = CompositeStreamSubscription();
 
   _State(this._feedItemBloc, this._widgetFactory);
 
   @override
   void initState() {
     super.initState();
-    _errorSubscription = _feedItemBloc.errorStream.listen(_showError);
+    _subscription.add(_feedItemBloc.feedItemDoesNotExistErrorStream
+        .map((_) => Localization.of(context).errorFeedItemDoesNotExist)
+        .listen(_showError));
+    _subscription.add(_feedItemBloc.loadFeedItemErrorStream
+        .map((_) => Localization.of(context).errorLoadFeedItem)
+        .listen(_showError));
   }
 
   @override
   void dispose() {
     _feedItemBloc.dispose();
-    _errorSubscription.cancel();
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -45,7 +50,7 @@ class _State extends State<CupertinoFeedItemPage> {
           bloc: _feedItemBloc, builder: (context, state) => _body(state)));
 
   Widget _navigationBar() => CupertinoNavigationBar(
-      middle: Text("Feed item"),
+      middle: Text(Localization.of(context).feedItemTitle),
       trailing: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
         CupertinoIconButton(Icon(CupertinoIcons.book),
             () => _feedItemBloc.dispatch(OnOpenInBrowserTapped())),

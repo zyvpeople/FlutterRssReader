@@ -76,13 +76,13 @@ class FeedBlocFactory {
 }
 
 class FeedBloc extends Bloc<FeedEvent, FeedState> {
-  final _errorStreamController = StreamController<String>.broadcast();
+  final _syncErrorStreamController = StreamController.broadcast();
   final List<StreamSubscription> _subscriptions = [];
   final int _feedId;
   final FeedService _feedService;
   final RouterBloc _routerBloc;
 
-  Stream<String> get errorStream => _errorStreamController.stream;
+  Stream get syncErrorStream => _syncErrorStreamController.stream;
 
   FeedBloc._(this._feedId, this._feedService, this._routerBloc);
 
@@ -107,7 +107,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   void dispose() {
     _subscriptions.forEach((it) => it.cancel());
     _subscriptions.clear();
-    _errorStreamController.close();
+    _syncErrorStreamController.close();
     super.dispose();
   }
 
@@ -125,7 +125,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     } else if (event is OnSyncStatusChanged) {
       yield currentState.withProgress(_feedService.isSync);
     } else if (event is OnSyncError) {
-      _errorStreamController.sink.add("Error sync feed");
+      _syncErrorStreamController.sink.add(null);
     } else if (event is OnFeedItemTapped) {
       _routerBloc.dispatch(OnFeedItem(event.feedItemId));
     } else if (event is OnOpenInBrowserTapped) {

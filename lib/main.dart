@@ -9,7 +9,6 @@ import 'package:flutter_rss_reader/application/PresentationFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/PhoneRouter.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
 
-//TODO: add i18n
 //TODO: add tablet mode
 
 void main() {

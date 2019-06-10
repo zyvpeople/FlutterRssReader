@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter_rss_reader/domain/common/CompositeStreamSubscription.dart';
 import 'package:flutter_rss_reader/domain/entity/Feed.dart';
 import 'package:flutter_rss_reader/domain/service/FeedService.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
@@ -61,10 +62,6 @@ class OnSearchTextEntered extends FeedsEvent {
 
 class OnSearchCloseTapped extends FeedsEvent {}
 
-abstract class FeedsRouter {
-  void onAddFeed();
-}
-
 class FeedsBlocFactory {
   final FeedService _feedService;
   final RouterBloc _routerBloc;
@@ -77,20 +74,25 @@ class FeedsBlocFactory {
 class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
   final FeedService _feedService;
   final RouterBloc _routerBloc;
-  final _subscriptions = <StreamSubscription>[];
-  final _errorStreamController = StreamController<String>.broadcast();
+  final _subscription = CompositeStreamSubscription();
+  final _syncErrorStreamController = StreamController.broadcast();
+  final _deleteFeedErrorStreamController = StreamController.broadcast();
 
-  Stream<String> get errorStream => _errorStreamController.stream;
+  Stream get syncFeedsErrorStream =>
+      _syncErrorStreamController.stream;
+
+  Stream get deleteFeedErrorStream =>
+      _deleteFeedErrorStreamController.stream;
 
   FeedsBloc._(this._feedService, this._routerBloc);
 
   factory FeedsBloc(FeedService feedService, RouterBloc routerBloc) {
     final bloc = FeedsBloc._(feedService, routerBloc);
-    bloc._subscriptions.add(feedService.feedsChanged
+    bloc._subscription.add(feedService.feedsChanged
         .listen((it) => bloc.dispatch(OnFeedsChanged())));
-    bloc._subscriptions.add(feedService.syncStatusChanged
+    bloc._subscription.add(feedService.syncStatusChanged
         .listen((_) => bloc.dispatch(OnSyncStatusChanged())));
-    bloc._subscriptions.add(feedService.syncException
+    bloc._subscription.add(feedService.syncException
         .listen((it) => bloc.dispatch(OnSyncError(it))));
     bloc.dispatch(OnFeedsChanged());
     bloc.dispatch(OnSyncStatusChanged());
@@ -100,9 +102,9 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
 
   @override
   void dispose() {
-    _subscriptions.forEach((it) => it.cancel());
-    _subscriptions.clear();
-    _errorStreamController.close();
+    _subscription.cancel();
+    _syncErrorStreamController.close();
+    _deleteFeedErrorStreamController.close();
     super.dispose();
   }
 
@@ -120,14 +122,14 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
     } else if (event is OnSyncStatusChanged) {
       yield currentState.withProgress(_feedService.isSync);
     } else if (event is OnSyncError) {
-      _errorStreamController.add("Error sync feeds");
+      _syncErrorStreamController.add(null);
     } else if (event is OnFeedTapped) {
       _routerBloc.dispatch(OnFeed(event.feedId));
     } else if (event is OnDeleteFeedItem) {
       try {
         _feedService.deleteFeed(event.feedId);
       } catch (e) {
-        _errorStreamController.sink.add("Error delete feed");
+        _deleteFeedErrorStreamController.sink.add(null);
       }
     } else if (event is OnSearchTapped) {
       yield currentState.withSearch(true, "");

@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rss_reader/presentation/localization/Localization.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
 
 class OnlineStatus extends StatefulWidget {
@@ -32,7 +33,8 @@ class _State extends State<OnlineStatus> {
                     color: Color.fromARGB(0xFF, 0xFF, 0x00, 0x00),
                     height: 24,
                     padding: EdgeInsets.only(left: 16, right: 16),
-                    child: Center(child: Text("No Internet connection")))
+                    child: Center(
+                        child: Text(Localization.of(context).noInternet)))
                 : Container();
           });
 }

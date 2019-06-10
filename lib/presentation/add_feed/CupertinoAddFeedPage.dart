@@ -1,10 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rss_reader/domain/common/CompositeStreamSubscription.dart';
 import 'package:flutter_rss_reader/presentation/add_feed/AddFeedBloc.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoIconButton.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoWidgetFactory.dart';
+import 'package:flutter_rss_reader/presentation/localization/Localization.dart';
 
 class CupertinoAddFeedPage extends StatefulWidget {
   final AddFeedBlocFactory _addFeedBlocFactory;
@@ -20,20 +20,22 @@ class _State extends State<CupertinoAddFeedPage> {
   final _textEditingController = TextEditingController();
   final AddFeedBloc _addFeedBloc;
   final CupertinoWidgetFactory _widgetFactory;
-  StreamSubscription _errorSubscription;
+  final _subscription = CompositeStreamSubscription();
 
   _State(this._addFeedBloc, this._widgetFactory);
 
   @override
   void initState() {
     super.initState();
-    _errorSubscription = _addFeedBloc.errorStream.listen(_showError);
+    _subscription.add(_addFeedBloc.createFeedErrorStream
+        .map((_) => Localization.of(context).errorCreateFeed)
+        .listen(_showError));
   }
 
   @override
   void dispose() {
     _addFeedBloc.dispose();
-    _errorSubscription.cancel();
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -44,14 +46,14 @@ class _State extends State<CupertinoAddFeedPage> {
           navigationBar: _navigationBar(state), child: _body(state)));
 
   Widget _navigationBar(AddFeedState state) => CupertinoNavigationBar(
-      middle: Text("Add feed"),
+      middle: Text(Localization.of(context).addFeedTitle),
       trailing: CupertinoIconButton(Icon(CupertinoIcons.add),
           state.progress ? null : () => _addFeedBloc.dispatch(OnAddFeed())));
 
   Widget _body(AddFeedState state) {
     final textField = CupertinoTextField(
         controller: _textEditingController,
-        placeholder: "Feed URL",
+        placeholder: Localization.of(context).feedUrlHint,
         keyboardType: TextInputType.url,
         decoration: BoxDecoration(),
         enabled: state.editable,

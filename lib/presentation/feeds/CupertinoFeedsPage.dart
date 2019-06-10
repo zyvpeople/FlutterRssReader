@@ -1,13 +1,13 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rss_reader/domain/common/CompositeStreamSubscription.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoIconButton.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoListTile.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoSearchBar.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoSliverListView.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feeds/FeedsBloc.dart';
+import 'package:flutter_rss_reader/presentation/localization/Localization.dart';
 
 //TODO: add online indicator
 //TODO: fix pull to refresh
@@ -25,20 +25,25 @@ class _State extends State<CupertinoFeedsPage> {
   final _textEditingController = TextEditingController();
   final FeedsBloc _feedsBloc;
   final CupertinoWidgetFactory _widgetFactory;
-  StreamSubscription _errorSubscription;
+  final _subscription = CompositeStreamSubscription();
 
   _State(this._feedsBloc, this._widgetFactory);
 
   @override
   void initState() {
     super.initState();
-    _errorSubscription = _feedsBloc.errorStream.listen(_showError);
+    _subscription.add(_feedsBloc.syncFeedsErrorStream
+        .map((_) => Localization.of(context).errorSync)
+        .listen(_showError));
+    _subscription.add(_feedsBloc.deleteFeedErrorStream
+        .map((_) => Localization.of(context).errorDeleteFeed)
+        .listen(_showError));
   }
 
   @override
   void dispose() {
     _feedsBloc.dispose();
-    _errorSubscription.cancel();
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -58,7 +63,7 @@ class _State extends State<CupertinoFeedsPage> {
         child: _searchBar(state.searchText),
       ),
       trailing: GestureDetector(
-          child: Text("Cancel",
+          child: Text(Localization.of(context).buttonSearchCancel,
               style: TextStyle(color: CupertinoColors.activeBlue)),
           onTap: () => _feedsBloc.dispatch(OnSearchCloseTapped())));
 
@@ -71,7 +76,7 @@ class _State extends State<CupertinoFeedsPage> {
   }
 
   Widget _noSearchNavigationBar() => CupertinoNavigationBar(
-      middle: Text("Feeds"),
+      middle: Text(Localization.of(context).feedsTitle),
       trailing: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
         CupertinoIconButton(Icon(CupertinoIcons.search),
             () => _feedsBloc.dispatch(OnSearchTapped())),

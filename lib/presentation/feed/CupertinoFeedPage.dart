@@ -1,16 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_rss_reader/domain/entity/FeedItem.dart';
+import 'package:flutter_rss_reader/domain/common/CompositeStreamSubscription.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoIconButton.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoListTile.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoSearchBar.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoSliverListView.dart';
 import 'package:flutter_rss_reader/presentation/cupertino/CupertinoWidgetFactory.dart';
 import 'package:flutter_rss_reader/presentation/feed/FeedBloc.dart';
+import 'package:flutter_rss_reader/presentation/localization/Localization.dart';
 import 'package:flutter_rss_reader/presentation/online_status/OnlineStatusBloc.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class CupertinoFeedPage extends StatefulWidget {
   final FeedBlocFactory _feedBlocFactory;
@@ -30,20 +28,22 @@ class _State extends State<CupertinoFeedPage> {
   final FeedBloc _feedBloc;
   final OnlineStatusBlocFactory _onlineStatusBlocFactory;
   final CupertinoWidgetFactory _widgetFactory;
-  StreamSubscription _errorSubscription;
+  final _subscription = CompositeStreamSubscription();
 
   _State(this._feedBloc, this._onlineStatusBlocFactory, this._widgetFactory);
 
   @override
   void initState() {
     super.initState();
-    _errorSubscription = _feedBloc.errorStream.listen(_showError);
+    _subscription.add(_feedBloc.syncErrorStream
+        .map((_) => Localization.of(context).errorSync)
+        .listen(_showError));
   }
 
   @override
   void dispose() {
     _feedBloc.dispose();
-    _errorSubscription.cancel();
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -62,7 +62,7 @@ class _State extends State<CupertinoFeedPage> {
         child: _searchBar(state.searchText),
       ),
       trailing: GestureDetector(
-          child: Text("Cancel",
+          child: Text(Localization.of(context).buttonSearchCancel,
               style: TextStyle(color: CupertinoColors.activeBlue)),
           onTap: () => _feedBloc.dispatch(OnSearchCloseTapped())));
 
@@ -75,11 +75,10 @@ class _State extends State<CupertinoFeedPage> {
   }
 
   Widget _noSearchNavigationBar() => CupertinoNavigationBar(
-      middle: Text("Feed items"),
+      middle: Text(Localization.of(context).feedTitle),
       trailing: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
         CupertinoIconButton(Icon(CupertinoIcons.search),
             () => _feedBloc.dispatch(OnSearchTapped())),
-        //TODO: icon
         CupertinoIconButton(Icon(CupertinoIcons.book),
             () => _feedBloc.dispatch(OnOpenInBrowserTapped()))
       ]));
@@ -96,12 +95,6 @@ class _State extends State<CupertinoFeedPage> {
       })
     ]));
   }
-
-  Widget _image(FeedItem feedItem) => FadeInImage.memoryNetwork(
-      width: 36,
-      height: 36,
-      image: feedItem.imageUrl.toString(),
-      placeholder: kTransparentImage);
 
   void _showError(String error) {
     showCupertinoDialog(
