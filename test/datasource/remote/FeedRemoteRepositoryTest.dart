@@ -1,6 +1,6 @@
 import 'package:flutter_rss_reader/datasource/remote/FeedParser.dart';
 import 'package:flutter_rss_reader/datasource/remote/FeedRemoteRepository.dart';
-import 'package:flutter_rss_reader/datasource/remote/HttpClient.dart';
+import 'package:flutter_rss_reader/datasource/remote/http_client/HttpClient.dart';
 import 'package:flutter_rss_reader/domain/common/Tuple2.dart';
 import 'package:flutter_rss_reader/domain/entity/Feed.dart';
 import 'package:flutter_rss_reader/domain/entity/FeedItem.dart';
