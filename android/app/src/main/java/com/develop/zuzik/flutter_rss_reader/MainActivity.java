@@ -14,5 +14,7 @@ public class MainActivity extends FlutterActivity {
         GeneratedPluginRegistrant.registerWith(this);
         new MethodChannel(getFlutterView(), HttpClientMethodCallHandler.CHANNEL)
                 .setMethodCallHandler(new HttpClientMethodCallHandler());
+        new MethodChannel(getFlutterView(), ShareMethodCallHandler.CHANNEL)
+                .setMethodCallHandler(new ShareMethodCallHandler(this));
     }
 }

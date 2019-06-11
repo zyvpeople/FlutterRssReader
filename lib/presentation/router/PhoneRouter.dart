@@ -5,26 +5,31 @@ import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
 import 'package:flutter_rss_reader/presentation/router/page_factory/PageFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/route_factory/RouteFactory.dart'
     as routeFactory;
-import 'package:share/share.dart';
+import 'package:flutter_rss_reader/presentation/router/share/ShareRouter.dart';
 
 class PhoneRouter extends StatefulWidget {
   final RouterBloc _routerBloc;
   final routeFactory.RouteFactory _routeFactory;
   final PageFactory _pageFactory;
+  final ShareRouter _shareRouter;
 
-  PhoneRouter(this._routerBloc, this._routeFactory, this._pageFactory);
+  PhoneRouter(this._routerBloc, this._routeFactory, this._pageFactory,
+      this._shareRouter);
 
   @override
-  State createState() => _State(_routerBloc, _routeFactory, _pageFactory);
+  State createState() =>
+      _State(_routerBloc, _routeFactory, _pageFactory, _shareRouter);
 }
 
 class _State extends State<PhoneRouter> {
   final RouterBloc _routerBloc;
   final routeFactory.RouteFactory _routeFactory;
   final PageFactory _pageFactory;
+  final ShareRouter _shareRouter;
   StreamSubscription _routerBlocSubscription;
 
-  _State(this._routerBloc, this._routeFactory, this._pageFactory);
+  _State(this._routerBloc, this._routeFactory, this._pageFactory,
+      this._shareRouter);
 
   @override
   void initState() {
@@ -43,8 +48,7 @@ class _State extends State<PhoneRouter> {
         } else if (event is OnBrowser) {
           _push(() => _pageFactory.browserPage(event.url));
         } else if (event is OnShare) {
-          //TODO: encapsulate
-          Share.share(event.url.toString());
+          _shareRouter.shareUrl(event.url);
         }
       }
     });

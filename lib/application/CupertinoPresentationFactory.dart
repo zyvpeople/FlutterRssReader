@@ -9,12 +9,16 @@ import 'package:flutter_rss_reader/presentation/router/page_factory/CupertinoPag
 import 'package:flutter_rss_reader/presentation/router/page_factory/PageFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/route_factory/CupertinoRouteFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/route_factory/RouteFactory.dart';
+import 'package:flutter_rss_reader/presentation/router/share/FlutterShareRouter.dart';
+import 'package:flutter_rss_reader/presentation/router/share/NativeShareRouter.dart';
+import 'package:flutter_rss_reader/presentation/router/share/ShareRouter.dart';
 
 class CupertinoPresentationFactory implements PresentationFactory {
   final _widgetFactory = CupertinoWidgetFactory();
   final BlocFactory _blocFactory;
 
-  CupertinoPresentationFactory(RouterBloc routerBloc, DomainFactory domainFactory)
+  CupertinoPresentationFactory(
+      RouterBloc routerBloc, DomainFactory domainFactory)
       : _blocFactory = BlocFactory(domainFactory.createFeedService(),
             domainFactory.networkService, routerBloc);
 
@@ -28,4 +32,7 @@ class CupertinoPresentationFactory implements PresentationFactory {
 
   @override
   RouteFactory createRouteFactory() => CupertinoRouteFactory();
+
+  @override
+  ShareRouter createShareRouter() => NativeShareRouter();
 }

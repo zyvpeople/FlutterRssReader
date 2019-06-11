@@ -9,6 +9,8 @@ import 'package:flutter_rss_reader/presentation/router/page_factory/MaterialPage
 import 'package:flutter_rss_reader/presentation/router/page_factory/PageFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/route_factory/MaterialRouteFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/route_factory/RouteFactory.dart';
+import 'package:flutter_rss_reader/presentation/router/share/FlutterShareRouter.dart';
+import 'package:flutter_rss_reader/presentation/router/share/ShareRouter.dart';
 
 class MaterialPresentationFactory implements PresentationFactory {
   final _widgetFactory = MaterialWidgetFactory();
@@ -28,4 +30,7 @@ class MaterialPresentationFactory implements PresentationFactory {
 
   @override
   RouteFactory createRouteFactory() => MaterialRouteFactory();
+
+  @override
+  ShareRouter createShareRouter() => FlutterShareRouter();
 }

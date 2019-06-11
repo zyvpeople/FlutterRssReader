@@ -10,7 +10,6 @@ import 'package:flutter_rss_reader/presentation/router/PhoneRouter.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
 
 //TODO: add tablet mode
-//TODO: add native sharing
 //TODO: add flavors
 //TODO: add themes
 
@@ -22,8 +21,11 @@ void main() {
       createPresentationFactory(routerBloc, domainFactory);
   runApp(presentationFactory.createApplicationFactory().create(
       "Rss reader",
-      PhoneRouter(routerBloc, presentationFactory.createRouteFactory(),
-          presentationFactory.createPageFactory())));
+      PhoneRouter(
+          routerBloc,
+          presentationFactory.createRouteFactory(),
+          presentationFactory.createPageFactory(),
+          presentationFactory.createShareRouter())));
 }
 
 PresentationFactory createPresentationFactory(
