@@ -25,6 +25,8 @@ class OnOpenInBrowserTapped extends FeedItemEvent {}
 
 class OnShareTapped extends FeedItemEvent {}
 
+class OnBackTapped extends FeedItemEvent {}
+
 class FeedItemState {
   final FeedItem feedItemOrNull;
   final String title;
@@ -100,6 +102,8 @@ class FeedItemBloc extends Bloc<FeedItemEvent, FeedItemState> {
       if (feedItem != null) {
         _routerBloc.dispatch(OnShare(feedItem.url));
       }
+    } else if (event is OnBackTapped) {
+      _routerBloc.dispatch(OnBack());
     }
   }
 }

@@ -6,10 +6,9 @@ import 'package:flutter_rss_reader/application/DatasourceFactory.dart';
 import 'package:flutter_rss_reader/application/DomainFactory.dart';
 import 'package:flutter_rss_reader/application/MaterialPresentationFactory.dart';
 import 'package:flutter_rss_reader/application/PresentationFactory.dart';
-import 'package:flutter_rss_reader/presentation/router/PhoneRouter.dart';
+import 'package:flutter_rss_reader/presentation/router/FormFactorRouter.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
 
-//TODO: add tablet mode
 //TODO: add flavors
 //TODO: add themes
 
@@ -21,7 +20,7 @@ void main() {
       createPresentationFactory(routerBloc, domainFactory);
   runApp(presentationFactory.createApplicationFactory().create(
       "Rss reader",
-      PhoneRouter(
+      FormFactorRouter(
           routerBloc,
           presentationFactory.createRouteFactory(),
           presentationFactory.createPageFactory(),

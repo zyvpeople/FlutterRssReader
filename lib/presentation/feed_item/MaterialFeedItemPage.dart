@@ -9,20 +9,24 @@ import 'package:transparent_image/transparent_image.dart';
 class MaterialFeedItemPage extends StatefulWidget {
   final FeedItemBlocFactory _feedItemBlocFactory;
   final MaterialWidgetFactory _widgetFactory;
+  final bool _withBackButton;
 
-  MaterialFeedItemPage(this._feedItemBlocFactory, this._widgetFactory);
+  MaterialFeedItemPage(
+      this._feedItemBlocFactory, this._widgetFactory, this._withBackButton);
 
   @override
-  State createState() => _State(_feedItemBlocFactory.create(), _widgetFactory);
+  State createState() =>
+      _State(_feedItemBlocFactory.create(), _widgetFactory, _withBackButton);
 }
 
 class _State extends State<MaterialFeedItemPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FeedItemBloc _feedItemBloc;
   final MaterialWidgetFactory _widgetFactory;
+  final bool _withBackButton;
   final _subscription = CompositeStreamSubscription();
 
-  _State(this._feedItemBloc, this._widgetFactory);
+  _State(this._feedItemBloc, this._widgetFactory, this._withBackButton);
 
   @override
   void initState() {
@@ -50,6 +54,11 @@ class _State extends State<MaterialFeedItemPage> {
           bloc: _feedItemBloc, builder: (context, state) => _body(state)));
 
   Widget _appBar() => AppBar(
+          leading: _withBackButton
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () => _feedItemBloc.dispatch(OnBackTapped()))
+              : null,
           title: Text(Localization.of(context).feedItemTitle),
           actions: <Widget>[
             IconButton(

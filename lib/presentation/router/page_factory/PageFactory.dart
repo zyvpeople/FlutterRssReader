@@ -7,7 +7,9 @@ abstract class PageFactory {
 
   Widget feedPage(int feedId);
 
-  Widget feedItemPage(int feedItemId);
+  Widget emptyFeedPage();
 
-  Widget browserPage(Uri url);
+  Widget feedItemPage(int feedItemId, bool withBackButton);
+
+  Widget browserPage(Uri url, bool withBackButton);
 }

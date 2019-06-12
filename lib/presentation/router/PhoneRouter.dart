@@ -13,8 +13,9 @@ class PhoneRouter extends StatefulWidget {
   final PageFactory _pageFactory;
   final ShareRouter _shareRouter;
 
-  PhoneRouter(this._routerBloc, this._routeFactory, this._pageFactory,
-      this._shareRouter);
+  PhoneRouter(Key key, this._routerBloc, this._routeFactory, this._pageFactory,
+      this._shareRouter)
+      : super(key: key);
 
   @override
   State createState() =>
@@ -44,9 +45,9 @@ class _State extends State<PhoneRouter> {
         } else if (event is OnFeed) {
           _push(() => _pageFactory.feedPage(event.feedId));
         } else if (event is OnFeedItem) {
-          _push(() => _pageFactory.feedItemPage(event.feedItemId));
+          _push(() => _pageFactory.feedItemPage(event.feedItemId, false));
         } else if (event is OnBrowser) {
-          _push(() => _pageFactory.browserPage(event.url));
+          _push(() => _pageFactory.browserPage(event.url, false));
         } else if (event is OnShare) {
           _shareRouter.shareUrl(event.url);
         }

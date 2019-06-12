@@ -11,19 +11,23 @@ import 'package:transparent_image/transparent_image.dart';
 class CupertinoFeedItemPage extends StatefulWidget {
   final FeedItemBlocFactory _feedItemBlocFactory;
   final CupertinoWidgetFactory _widgetFactory;
+  final bool _withBackButton;
 
-  CupertinoFeedItemPage(this._feedItemBlocFactory, this._widgetFactory);
+  CupertinoFeedItemPage(
+      this._feedItemBlocFactory, this._widgetFactory, this._withBackButton);
 
   @override
-  State createState() => _State(_feedItemBlocFactory.create(), _widgetFactory);
+  State createState() =>
+      _State(_feedItemBlocFactory.create(), _widgetFactory, _withBackButton);
 }
 
 class _State extends State<CupertinoFeedItemPage> {
   final FeedItemBloc _feedItemBloc;
   final CupertinoWidgetFactory _widgetFactory;
+  final bool _withBackButton;
   final _subscription = CompositeStreamSubscription();
 
-  _State(this._feedItemBloc, this._widgetFactory);
+  _State(this._feedItemBloc, this._widgetFactory, this._withBackButton);
 
   @override
   void initState() {
@@ -50,6 +54,10 @@ class _State extends State<CupertinoFeedItemPage> {
           bloc: _feedItemBloc, builder: (context, state) => _body(state)));
 
   Widget _navigationBar() => CupertinoNavigationBar(
+      leading: _withBackButton
+          ? CupertinoIconButton(Icon(CupertinoIcons.back),
+              () => _feedItemBloc.dispatch(OnBackTapped()))
+          : null,
       middle: Text(Localization.of(context).feedItemTitle),
       trailing: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
         CupertinoIconButton(Icon(CupertinoIcons.book),

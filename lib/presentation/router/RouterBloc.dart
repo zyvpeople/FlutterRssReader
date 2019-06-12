@@ -16,6 +16,16 @@ class OnFeed extends RouterEvent {
   final int feedId;
 
   OnFeed(this.feedId);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OnFeed &&
+          runtimeType == other.runtimeType &&
+          feedId == other.feedId;
+
+  @override
+  int get hashCode => feedId.hashCode;
 }
 
 class OnFeedItem extends RouterEvent {

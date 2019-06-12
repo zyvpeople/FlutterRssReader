@@ -55,11 +55,10 @@ class _State extends State<CupertinoAddFeedPage> {
         controller: _textEditingController,
         placeholder: Localization.of(context).feedUrlHint,
         keyboardType: TextInputType.url,
-        decoration: BoxDecoration(),
         enabled: state.editable,
         onChanged: (it) => _addFeedBloc.dispatch(OnUrlChanged(it)),
         onSubmitted: (it) => _addFeedBloc.dispatch(OnAddFeed()));
-    final content = Container(padding: EdgeInsets.all(16), child: textField);
+    final content = Container(padding: EdgeInsets.all(16), child: ListView(children: <Widget>[textField]));
     return SafeArea(
         child: state.progress
             ? Stack(children: <Widget>[

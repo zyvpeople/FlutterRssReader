@@ -18,6 +18,7 @@ class Strings {
   final String buttonSearchCancel;
   final String errorFeedItemDoesNotExist;
   final String errorLoadFeedItem;
+  final String noFeedSelected;
 
   Strings({
     @required this.feedsTitle,
@@ -37,5 +38,6 @@ class Strings {
     @required this.buttonSearchCancel,
     @required this.errorFeedItemDoesNotExist,
     @required this.errorLoadFeedItem,
+    @required this.noFeedSelected,
   });
 }

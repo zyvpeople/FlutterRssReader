@@ -19,6 +19,7 @@ class StringsFactory {
     buttonSearchCancel: "Cancel",
     errorFeedItemDoesNotExist: "Feed item does not exist",
     errorLoadFeedItem: "Error load feed item",
+    noFeedSelected: "No feed selected",
   );
 
   static final uk = Strings(
@@ -39,5 +40,6 @@ class StringsFactory {
     buttonSearchCancel: "Відміна",
     errorFeedItemDoesNotExist: "Новина не існує",
     errorLoadFeedItem: "Помилка завантаження новини",
+    noFeedSelected: "Не вибрано джерело",
   );
 }
