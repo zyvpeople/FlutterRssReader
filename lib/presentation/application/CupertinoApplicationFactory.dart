@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_rss_reader/presentation/localization/Localization.dart';
 import 'package:flutter_rss_reader/presentation/localization/LocalizationDelegate.dart';
-import 'package:flutter_rss_reader/presentation/router/application_factory/ApplicationFactory.dart';
+import 'package:flutter_rss_reader/presentation/application/ApplicationFactory.dart';
 
 class CupertinoApplicationFactory implements ApplicationFactory {
   @override
