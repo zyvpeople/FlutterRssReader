@@ -61,7 +61,9 @@ class FeedService {
     _setIsSyncAndNotify(true);
     _feedLocalRepository
         .feeds(null)
-        .then((feeds) => Future.wait(feeds.map(_syncFeed)))
+        .then((feeds) => Future.wait(feeds.map(_loadFeedItems)))
+        .then((it) => it.expand((feedItems) => feedItems).toList())
+        .then((it) => _feedLocalRepository.createOrUpdateFeedItems(it))
         .then(_onSuccessSyncAll)
         .catchError(_onErrorSyncAll);
   }
@@ -84,16 +86,22 @@ class FeedService {
     _setIsSyncAndNotify(true);
     _feedLocalRepository
         .findFeed(id)
-        .then((feed) async => feed == null ? null : _syncFeed(feed))
+        .then((feed) async {
+          if (feed == null) {
+            return null;
+          }
+          final feedItems = await _loadFeedItems(feed);
+          await _feedLocalRepository.createOrUpdateFeedItems(feedItems);
+        })
         .then(_onSuccessSyncFeed)
         .catchError(_onErrorSyncFeed);
   }
 
-  Future _syncFeed(Feed feed) async {
+  Future<List<FeedItem>> _loadFeedItems(Feed feed) async {
     final feedAndFeedItems = await _feedRemoteRepository.feed(feed.url);
     final feedItems =
         feedAndFeedItems.value2.map((it) => it.withFeedId(feed.id)).toList();
-    return await _feedLocalRepository.createOrUpdateFeedItems(feedItems);
+    return feedItems;
   }
 
   Future _onSuccessSyncFeed(event) async {

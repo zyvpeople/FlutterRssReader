@@ -10,7 +10,6 @@ import 'package:flutter_rss_reader/presentation/router/FormFactorRouter.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
 
 //TODO: add themes
-//FIXME: fixed bug with multiple refreshing
 
 void main() {
   var datasourceFactory = DatasourceFactory();
