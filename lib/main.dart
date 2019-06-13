@@ -9,8 +9,6 @@ import 'package:flutter_rss_reader/application/PresentationFactory.dart';
 import 'package:flutter_rss_reader/presentation/router/FormFactorRouter.dart';
 import 'package:flutter_rss_reader/presentation/router/RouterBloc.dart';
 
-//TODO: add themes
-
 void main() {
   var datasourceFactory = DatasourceFactory();
   final domainFactory = DomainFactory(datasourceFactory);
